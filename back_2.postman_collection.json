@@ -1,0 +1,137 @@
+{
+  "info": {
+    "name": "back_2 API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Coleccion de prueba para la API Next.js con Prisma y Supabase."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:3000"
+    },
+    {
+      "key": "productoId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Contactos",
+      "item": [
+        {
+          "name": "GET contactos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/contactos"
+          }
+        },
+        {
+          "name": "POST contacto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Marta Soto\",\n  \"email\": \"marta.postman@example.com\",\n  \"telefono\": \"+5215555555510\",\n  \"aceptaPromociones\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/contactos"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Productos",
+      "item": [
+        {
+          "name": "GET productos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/productos"
+          }
+        },
+        {
+          "name": "GET productos activos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/productos/activos"
+          }
+        },
+        {
+          "name": "POST producto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Producto Postman\",\n  \"categoria\": \"Accesorios\",\n  \"descripcion\": \"Creado desde la coleccion de Postman\",\n  \"precio\": \"220.00\",\n  \"imagenUrl\": \"https://example.com/postman.jpg\",\n  \"activo\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/productos"
+          }
+        },
+        {
+          "name": "PUT producto por id",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Producto Actualizado Postman\",\n  \"categoria\": \"Hogar\",\n  \"precio\": \"180.00\"\n}"
+            },
+            "url": "{{baseUrl}}/api/productos/{{productoId}}"
+          }
+        },
+        {
+          "name": "DELETE producto por id",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/productos/{{productoId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contactos WhatsApp",
+      "item": [
+        {
+          "name": "GET contactos-whats",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/contactos-whats"
+          }
+        },
+        {
+          "name": "POST contacto-whats",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cotizacion\": \"Necesito una cotizacion para 20 piezas del Producto Base\"\n}"
+            },
+            "url": "{{baseUrl}}/api/contactos-whats"
+          }
+        }
+      ]
+    }
+  ]
+}

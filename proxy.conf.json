@@ -1,0 +1,8 @@
+{
+  "/api": {
+    "target": "https://back-2-hazel.vercel.app",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

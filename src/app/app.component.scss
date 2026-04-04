@@ -243,6 +243,11 @@ main {
 	transform: translateY(-2px);
 }
 
+.button:disabled {
+	cursor: not-allowed;
+	transform: none;
+}
+
 .button-primary {
 	background: linear-gradient(135deg, var(--caramel-600), var(--berry-500));
 	color: #fff9f5;
@@ -609,6 +614,38 @@ main {
 	text-decoration: none;
 }
 
+.contact-form,
+.contact-form label {
+	display: grid;
+}
+
+.contact-form {
+	gap: 1rem;
+}
+
+.contact-form label {
+	gap: 0.55rem;
+	font-weight: 700;
+	color: var(--ink-800);
+}
+
+.contact-form input,
+.quote-form input[type='number'] {
+	width: 100%;
+	min-height: 3.4rem;
+	padding: 0.9rem 1rem;
+	border: 1px solid rgba(97, 45, 16, 0.12);
+	border-radius: 1rem;
+	font: inherit;
+	color: var(--ink-900);
+	background: #fffdfa;
+}
+
+.form-actions {
+	display: flex;
+	justify-content: flex-start;
+}
+
 .quote-form {
 	display: grid;
 	gap: 1rem;
@@ -690,17 +727,6 @@ main {
 	color: var(--ink-800);
 }
 
-.quote-form input[type='number'] {
-	width: 100%;
-	min-height: 3.4rem;
-	padding: 0.9rem 1rem;
-	border: 1px solid rgba(97, 45, 16, 0.12);
-	border-radius: 1rem;
-	font: inherit;
-	color: var(--ink-900);
-	background: #fffdfa;
-}
-
 .checkbox-row {
 	grid-template-columns: auto 1fr;
 	align-items: center;
@@ -760,6 +786,39 @@ main {
 
 .quote-note {
 	margin-top: 1.1rem;
+}
+
+.quote-card-full {
+	padding: 1.7rem;
+}
+
+.status-banner {
+	margin: 1rem 0 0;
+	padding: 0.9rem 1rem;
+	border-radius: 1rem;
+	font-weight: 700;
+	line-height: 1.5;
+	background: rgba(255, 244, 221, 0.84);
+	border: 1px solid rgba(97, 45, 16, 0.08);
+	color: var(--ink-800);
+}
+
+.status-banner-info {
+	background: rgba(255, 249, 232, 0.94);
+}
+
+.status-banner-warning {
+	background: rgba(255, 238, 214, 0.92);
+}
+
+.status-banner-success {
+	background: rgba(226, 248, 236, 0.95);
+	color: #14633d;
+}
+
+.status-banner-error {
+	background: rgba(255, 228, 223, 0.95);
+	color: #8d2d20;
 }
 
 .mobile-hud {

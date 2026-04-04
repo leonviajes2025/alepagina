@@ -24,6 +24,7 @@
       <a href="#inicio" (click)="closeMobileMenu()">Inicio</a>
       <a href="#productos" (click)="closeMobileMenu()">Sabores</a>
       <a href="#servicios" (click)="closeMobileMenu()">Eventos</a>
+      <a href="#dejanos-tu-contacto" (click)="closeMobileMenu()">Dejanos tu contacto</a>
       <a href="#contacto" (click)="closeMobileMenu()">Contacto</a>
       <a href="#cotizacion" (click)="closeMobileMenu()">Cotiza</a>
     </nav>
@@ -125,6 +126,14 @@
         </p>
       </div>
 
+      @if (productsLoading) {
+        <p class="status-banner status-banner-info reveal">Cargando productos desde la API...</p>
+      }
+
+      @if (productsError) {
+        <p class="status-banner status-banner-warning reveal">{{ productsError }}</p>
+      }
+
       <div class="product-grid">
         @for (product of products; track product.flavor) {
           <article class="product-card reveal">
@@ -187,7 +196,74 @@
         </div>
       </article>
 
-      <article class="quote-card reveal reveal-delay" id="cotizacion">
+      <article class="contact-card reveal reveal-delay" id="dejanos-tu-contacto">
+        <div class="section-heading left">
+          <p class="eyebrow">Dejanos tu contacto</p>
+          <h2>Registrate y te contactamos para ayudarte con tu pedido.</h2>
+        </div>
+
+        <form class="contact-form" (ngSubmit)="submitContactRequest()">
+          <label>
+            <span>Nombre</span>
+            <input
+              type="text"
+              name="contactName"
+              [(ngModel)]="contactForm.nombre"
+              placeholder="Tu nombre completo"
+              required
+            />
+          </label>
+
+          <label>
+            <span>Correo electronico</span>
+            <input
+              type="email"
+              name="contactEmail"
+              [(ngModel)]="contactForm.email"
+              placeholder="correo@ejemplo.com"
+              required
+            />
+          </label>
+
+          <label>
+            <span>Telefono</span>
+            <input
+              type="tel"
+              name="contactPhone"
+              [(ngModel)]="contactForm.telefono"
+              placeholder="5512345678"
+              required
+            />
+          </label>
+
+          <label class="checkbox-row">
+            <input type="checkbox" name="contactPromotions" [(ngModel)]="contactForm.aceptaPromociones" />
+            <span>Quiero recibir promociones y novedades</span>
+          </label>
+
+          <div class="form-actions">
+            <button
+              class="button button-primary"
+              type="submit"
+              [disabled]="!isContactFormValid || contactRequestState === 'loading'">
+              {{ contactRequestState === 'loading' ? 'Registrando...' : 'Registrar contacto' }}
+            </button>
+          </div>
+
+          @if (contactRequestMessage) {
+            <p
+              class="status-banner"
+              [class.status-banner-success]="contactRequestState === 'success'"
+              [class.status-banner-error]="contactRequestState === 'error'">
+              {{ contactRequestMessage }}
+            </p>
+          }
+        </form>
+      </article>
+    </section>
+
+    <section class="section" id="cotizacion">
+      <article class="quote-card quote-card-full reveal">
         <div class="section-heading left">
           <p class="eyebrow">Cotizacion</p>
           <h2>Calcula un estimado claro para tu evento.</h2>
@@ -302,19 +378,25 @@
           </div>
           <div class="quote-total quote-whatsapp-action">
             <span>Enviar cotizacion</span>
-            <a
+            <button
               class="button button-whatsapp"
-              [class.button-disabled]="selectedQuoteProducts.length === 0"
-              [attr.aria-disabled]="selectedQuoteProducts.length === 0"
-              [href]="selectedQuoteProducts.length > 0 ? quoteWhatsappLink : null"
-              [attr.tabindex]="selectedQuoteProducts.length === 0 ? -1 : null"
-              target="_blank"
-              rel="noopener"
-            >
-              Mandar cotizacion por WhatsApp
-            </a>
+              type="button"
+              [class.button-disabled]="selectedQuoteProducts.length === 0 || quoteRequestState === 'loading'"
+              [disabled]="selectedQuoteProducts.length === 0 || quoteRequestState === 'loading'"
+              (click)="submitQuoteRequest()">
+              {{ quoteRequestState === 'loading' ? 'Enviando...' : 'Mandar cotizacion por WhatsApp' }}
+            </button>
           </div>
         </div>
+
+        @if (quoteRequestMessage) {
+          <p
+            class="status-banner"
+            [class.status-banner-success]="quoteRequestState === 'success'"
+            [class.status-banner-error]="quoteRequestState === 'error'">
+            {{ quoteRequestMessage }}
+          </p>
+        }
 
         <p class="quote-note">
           El calculo es informativo y no reemplaza una cotizacion final. Captura cuantas piezas quieres de cada
@@ -327,6 +409,6 @@
   <nav class="mobile-hud" aria-label="Atajos moviles">
     <a href="#productos">Sabores</a>
     <a href="#cotizacion">Cotiza</a>
-    <a [href]="contactWhatsappLink" target="_blank" rel="noopener">WhatsApp</a>
+    <a href="#dejanos-tu-contacto">Contacto</a>
   </nav>
 </div>

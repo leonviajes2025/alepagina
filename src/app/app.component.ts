@@ -1,7 +1,9 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { siteConfig, type ProductCategory } from './site.config';
+import { finalize } from 'rxjs';
+import { SiteApiService, type ApiProductDto } from './site-api.service';
+import { siteConfig, type ProductCategory, type ProductConfig } from './site.config';
 
 type Product = {
   image: string;
@@ -13,6 +15,15 @@ type Product = {
 
 type QuoteProduct = Product & {
   quantity: number;
+};
+
+type RequestState = 'idle' | 'loading' | 'success' | 'error';
+
+type ContactFormModel = {
+  nombre: string;
+  email: string;
+  telefono: string;
+  aceptaPromociones: boolean;
 };
 
 type Service = {
@@ -34,7 +45,9 @@ type TrustPillar = {
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  private readonly api = inject(SiteApiService);
+
   readonly config = siteConfig;
 
   readonly brand = this.config.companyName;
@@ -45,17 +58,28 @@ export class AppComponent {
     whatsappNumber: this.config.whatsappNumber
   };
 
-  readonly products: Product[] = this.config.products.map((product) => ({
-    ...product,
-    price: this.getCatalogPrice(product.category)
-  }));
+  products: Product[] = this.buildCatalogProducts(this.config.products);
 
-  readonly quoteProducts: QuoteProduct[] = this.products.map((product) => ({
-    ...product,
-    quantity: 0
-  }));
+  quoteProducts: QuoteProduct[] = this.createQuoteProducts(this.products);
 
-  readonly featuredProduct = this.products[6] ?? this.products[0];
+  productsLoading = false;
+
+  productsError = '';
+
+  quoteRequestState: RequestState = 'idle';
+
+  quoteRequestMessage = '';
+
+  contactRequestState: RequestState = 'idle';
+
+  contactRequestMessage = '';
+
+  contactForm: ContactFormModel = {
+    nombre: '',
+    email: '',
+    telefono: '',
+    aceptaPromociones: false
+  };
 
   readonly trustPillars: TrustPillar[] = [
     {
@@ -101,6 +125,14 @@ export class AppComponent {
   quoteDelivery = true;
 
   mobileMenuOpen = false;
+
+  ngOnInit(): void {
+    this.loadProducts();
+  }
+
+  get featuredProduct(): Product {
+    return this.products[6] ?? this.products[0];
+  }
 
   get saltyPrice(): number {
     return this.config.productPrices.salty;
@@ -150,11 +182,17 @@ export class AppComponent {
     return this.subtotal + this.deliveryFee;
   }
 
+  get isContactFormValid(): boolean {
+    return this.contactForm.nombre.trim().length > 0
+      && this.contactForm.email.trim().length > 0
+      && this.contactForm.telefono.trim().length > 0;
+  }
+
   get contactWhatsappLink(): string {
     return this.buildWhatsappLink('Hola necesito mas informacion sobre la venta de palomitas');
   }
 
-  get quoteWhatsappLink(): string {
+  get quoteRequestText(): string {
     const selectedFlavors = this.selectedQuoteProducts.length > 0
       ? this.selectedQuoteProducts.map((product) => `- ${product.flavor}: ${product.quantity} piezas`).join('\n')
       : 'Sin sabores seleccionados todavia.';
@@ -170,7 +208,7 @@ export class AppComponent {
       `Total estimado: $${this.total}`
     ].join('\n');
 
-    return this.buildWhatsappLink(quoteDetails);
+    return quoteDetails;
   }
 
   toggleMobileMenu(): void {
@@ -205,6 +243,70 @@ export class AppComponent {
     this.quoteDelivery = false;
   }
 
+  submitQuoteRequest(): void {
+    if (this.selectedQuoteProducts.length === 0 || this.quoteRequestState === 'loading') {
+      return;
+    }
+
+    this.quoteRequestState = 'loading';
+    this.quoteRequestMessage = '';
+
+    this.api.submitWhatsappQuote(this.quoteRequestText)
+      .pipe(finalize(() => {
+        if (this.quoteRequestState === 'loading') {
+          this.quoteRequestState = 'idle';
+        }
+      }))
+      .subscribe({
+        next: () => {
+          this.quoteRequestState = 'success';
+          this.quoteRequestMessage = 'Cotizacion registrada. Abrimos WhatsApp para continuar la conversacion.';
+          window.open(this.buildWhatsappLink(this.quoteRequestText), '_blank', 'noopener');
+        },
+        error: () => {
+          this.quoteRequestState = 'error';
+          this.quoteRequestMessage = 'No fue posible registrar la cotizacion por ahora. Intenta nuevamente.';
+        }
+      });
+  }
+
+  submitContactRequest(): void {
+    if (!this.isContactFormValid || this.contactRequestState === 'loading') {
+      return;
+    }
+
+    this.contactRequestState = 'loading';
+    this.contactRequestMessage = '';
+
+    this.api.createContact({
+      nombre: this.contactForm.nombre.trim(),
+      email: this.contactForm.email.trim(),
+      telefono: this.contactForm.telefono.trim(),
+      aceptaPromociones: this.contactForm.aceptaPromociones
+    })
+      .pipe(finalize(() => {
+        if (this.contactRequestState === 'loading') {
+          this.contactRequestState = 'idle';
+        }
+      }))
+      .subscribe({
+        next: () => {
+          this.contactRequestState = 'success';
+          this.contactRequestMessage = 'Gracias. Tus datos fueron registrados correctamente.';
+          this.contactForm = {
+            nombre: '',
+            email: '',
+            telefono: '',
+            aceptaPromociones: false
+          };
+        },
+        error: () => {
+          this.contactRequestState = 'error';
+          this.contactRequestMessage = 'No se pudo registrar tu contacto. Intenta nuevamente.';
+        }
+      });
+  }
+
   private normalizeQuoteValue(value: number): number {
     if (!Number.isFinite(value) || value < 0) {
       return 0;
@@ -215,5 +317,149 @@ export class AppComponent {
 
   private buildWhatsappLink(message: string): string {
     return `https://wa.me/${this.contact.whatsappNumber}?text=${encodeURIComponent(message)}`;
+  }
+
+  private loadProducts(): void {
+    this.productsLoading = true;
+    this.productsError = '';
+
+    this.api.getProducts()
+      .pipe(finalize(() => {
+        this.productsLoading = false;
+      }))
+      .subscribe({
+        next: (products) => {
+          const mappedProducts = this.mapApiProducts(products);
+
+          if (mappedProducts.length === 0) {
+            this.productsError = 'La API no devolvio productos validos. Se muestra el catalogo base.';
+            return;
+          }
+
+          this.products = mappedProducts;
+          this.quoteProducts = this.createQuoteProducts(mappedProducts);
+        },
+        error: () => {
+          this.productsError = 'No fue posible cargar los productos desde la API. Se muestra el catalogo base.';
+        }
+      });
+  }
+
+  private buildCatalogProducts(products: readonly ProductConfig[]): Product[] {
+    return products.map((product) => ({
+      ...product,
+      price: this.getCatalogPrice(product.category)
+    }));
+  }
+
+  private createQuoteProducts(products: readonly Product[]): QuoteProduct[] {
+    return products.map((product) => ({
+      ...product,
+      quantity: 0
+    }));
+  }
+
+  private mapApiProducts(products: readonly ApiProductDto[]): Product[] {
+    return products
+      .filter((product) => this.isApiProductActive(product))
+      .map((product) => {
+        const flavor = this.resolveFlavor(product);
+        const fallback = this.findFallbackProduct(flavor);
+        const category = this.resolveCategory(this.resolveRawCategory(product), fallback?.category);
+
+        return {
+          flavor: flavor || fallback?.flavor || 'Producto gourmet',
+          category,
+          description: this.resolveDescription(product) || fallback?.description || 'Producto disponible para cotizacion inmediata.',
+          image: this.resolveImage(this.resolveRawImage(product), fallback?.image, category),
+          price: this.resolvePrice(this.resolveRawPrice(product), category)
+        };
+      });
+  }
+
+  private isApiProductActive(product: ApiProductDto): boolean {
+    return product.activo !== false && product.active !== false && product.disponible !== false;
+  }
+
+  private resolveFlavor(product: ApiProductDto): string {
+    return this.readFirstString(product.nombre, product.name, product.flavor, product.titulo);
+  }
+
+  private resolveRawCategory(product: ApiProductDto): string {
+    return this.readFirstString(product.categoria, product.category, product.tipo);
+  }
+
+  private resolveDescription(product: ApiProductDto): string {
+    return this.readFirstString(product.descripcion, product.description, product.detalle);
+  }
+
+  private resolveRawImage(product: ApiProductDto): string {
+    return this.readFirstString(product.imagenUrl, product.imageUrl, product.image, product.imagen);
+  }
+
+  private resolveRawPrice(product: ApiProductDto): number | string | undefined {
+    return product.precio ?? product.price;
+  }
+
+  private readFirstString(...values: Array<string | undefined>): string {
+    for (const value of values) {
+      if (typeof value === 'string' && value.trim().length > 0) {
+        return value.trim();
+      }
+    }
+
+    return '';
+  }
+
+  private findFallbackProduct(flavor?: string): ProductConfig | undefined {
+    const normalizedFlavor = flavor?.trim().toLowerCase();
+
+    if (!normalizedFlavor) {
+      return undefined;
+    }
+
+    return this.config.products.find((product) => product.flavor.toLowerCase() === normalizedFlavor);
+  }
+
+  private resolveCategory(rawCategory?: string, fallback?: ProductCategory): ProductCategory {
+    const normalizedCategory = rawCategory?.trim().toLowerCase() ?? '';
+
+    if (normalizedCategory.includes('dul') || normalizedCategory.includes('sweet')) {
+      return 'dulce';
+    }
+
+    if (normalizedCategory.includes('sal') || normalizedCategory.includes('sav')) {
+      return 'salada';
+    }
+
+    return fallback ?? 'salada';
+  }
+
+  private resolveImage(rawImage?: string, fallbackImage?: string, category?: ProductCategory): string {
+    if (rawImage?.trim()) {
+      return rawImage.trim();
+    }
+
+    if (fallbackImage) {
+      return fallbackImage;
+    }
+
+    return category === 'dulce' ? 'products/caramelo-clasico.svg' : 'products/queso-chipotle.svg';
+  }
+
+  private resolvePrice(rawPrice: number | string | undefined, category: ProductCategory): number {
+    if (typeof rawPrice === 'number' && Number.isFinite(rawPrice)) {
+      return rawPrice;
+    }
+
+    if (typeof rawPrice === 'string') {
+      const parsedPrice = Number.parseFloat(rawPrice);
+
+      if (Number.isFinite(parsedPrice)) {
+        return parsedPrice;
+      }
+    }
+
+    return this.getCatalogPrice(category);
   }
 }

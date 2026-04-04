@@ -1,3 +1,5 @@
+import { environment } from '../environments/environment';
+
 export type ProductCategory = 'dulce' | 'salada';
 
 export type ProductConfig = {
@@ -12,6 +14,7 @@ export const siteConfig = {
   contactName: 'Alejandrina Castro',
   contactEmail: 'hola@nubemaizgourmet.mx',
   whatsappNumber: '5569852630',
+  apiBaseUrl: environment.apiBaseUrl,
   productPrices: {
     salty: 30,
     sweet: 35

@@ -1,13 +1,49 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { AppComponent } from './app.component';
 import { siteConfig } from './site.config';
 
 describe('AppComponent', () => {
+  let httpTestingController: HttpTestingController;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AppComponent],
+      providers: [provideHttpClient(), provideHttpClientTesting()]
     }).compileComponents();
+
+    httpTestingController = TestBed.inject(HttpTestingController);
   });
+
+  afterEach(() => {
+    httpTestingController.verify();
+  });
+
+  function flushProductsRequest(): void {
+      const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/activos`);
+
+    expect(request.request.method).toBe('GET');
+
+    request.flush([
+      {
+        nombre: 'Esquite',
+        categoria: 'salada',
+        descripcion: 'Producto remoto',
+        precio: 32,
+        imagenUrl: 'products/queso-chipotle.svg',
+        activo: true
+      },
+      {
+        nombre: 'Caramelo',
+        categoria: 'dulce',
+        descripcion: 'Producto remoto dulce',
+        precio: 38,
+        imagenUrl: 'products/caramelo-clasico.svg',
+        activo: true
+      }
+    ]);
+  }
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(AppComponent);
@@ -23,6 +59,8 @@ describe('AppComponent', () => {
 
   it('should render the hero headline', () => {
     const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    flushProductsRequest();
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.textContent).toContain('Palomitas gourmet');
@@ -80,7 +118,7 @@ describe('AppComponent', () => {
     caramelo!.quantity = 8;
     app.quoteDelivery = true;
 
-    const decodedMessage = decodeURIComponent(app.whatsappLink.split('?text=')[1]);
+    const decodedMessage = app.quoteRequestText;
 
     expect(decodedMessage).toContain('Sabores solicitados:');
     expect(decodedMessage).toContain('- Esquite: 12 piezas');
@@ -113,5 +151,102 @@ describe('AppComponent', () => {
     expect(app.quoteDelivery).toBeFalse();
     expect(app.totalQuoteQuantity).toBe(0);
     expect(app.total).toBe(0);
+  });
+
+  it('should replace the fallback catalog with products from the API', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    fixture.detectChanges();
+    flushProductsRequest();
+
+    expect(app.products.length).toBe(2);
+    expect(app.products[0].flavor).toBe('Esquite');
+    expect(app.products[0].price).toBe(32);
+  });
+
+  it('should support wrapped product responses and alternate field names', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    fixture.detectChanges();
+
+      const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/activos`);
+    expect(request.request.method).toBe('GET');
+
+    request.flush({
+      data: {
+        rows: [
+          {
+            name: 'Chocolate oscuro',
+            category: 'sweet',
+            description: 'Producto remoto alterno',
+            price: '41.5',
+            image: 'products/chocolate-oscuro.svg',
+            active: true
+          },
+          {
+            titulo: 'Producto oculto',
+            tipo: 'salada',
+            detalle: 'No deberia mostrarse',
+            precio: 99,
+            imagen: 'products/queso-chipotle.svg',
+            disponible: false
+          }
+        ]
+      }
+    });
+
+    expect(app.products.length).toBe(1);
+    expect(app.products[0].flavor).toBe('Chocolate oscuro');
+    expect(app.products[0].category).toBe('dulce');
+    expect(app.products[0].price).toBe(41.5);
+    expect(app.products[0].description).toBe('Producto remoto alterno');
+  });
+
+  it('should register the WhatsApp quote before opening the chat', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    const openSpy = spyOn(window, 'open');
+
+    app.quoteProducts[0].quantity = 3;
+    app.submitQuoteRequest();
+
+      const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/contactos-whats`);
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body.cotizacion).toContain('Total de piezas: 3');
+
+    request.flush({ ok: true });
+
+    expect(app.quoteRequestState).toBe('success');
+    expect(openSpy).toHaveBeenCalled();
+  });
+
+  it('should send the contact form to the contactos endpoint', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    app.contactForm = {
+      nombre: 'Marta Soto',
+      email: 'marta.postman@example.com',
+      telefono: '+5215555555510',
+      aceptaPromociones: true
+    };
+
+    app.submitContactRequest();
+
+      const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/contactos`);
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({
+      nombre: 'Marta Soto',
+      email: 'marta.postman@example.com',
+      telefono: '+5215555555510',
+      aceptaPromociones: true
+    });
+
+    request.flush({ ok: true });
+
+    expect(app.contactRequestState).toBe('success');
+    expect(app.contactForm.nombre).toBe('');
   });
 });
