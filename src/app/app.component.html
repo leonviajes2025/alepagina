@@ -1,0 +1,332 @@
+<div class="page-shell">
+  <header class="site-header">
+    <a class="brand" href="#inicio">
+      <span class="brand-mark">B</span>
+      <span class="brand-copy">
+        <strong>{{ brand }}</strong>
+        <small>Palomitas gourmet</small>
+      </span>
+    </a>
+
+    <button
+      class="menu-toggle"
+      type="button"
+      [attr.aria-expanded]="mobileMenuOpen"
+      aria-controls="site-nav"
+      aria-label="Abrir menu principal"
+      (click)="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav class="site-nav" id="site-nav" aria-label="Principal" [class.site-nav-open]="mobileMenuOpen">
+      <a href="#inicio" (click)="closeMobileMenu()">Inicio</a>
+      <a href="#productos" (click)="closeMobileMenu()">Sabores</a>
+      <a href="#servicios" (click)="closeMobileMenu()">Eventos</a>
+      <a href="#contacto" (click)="closeMobileMenu()">Contacto</a>
+      <a href="#cotizacion" (click)="closeMobileMenu()">Cotiza</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero section" id="inicio">
+      <div class="hero-copy reveal">
+        <p class="eyebrow">Inspirado en abejas, miel y palomitas recien hechas</p>
+        <h1>Palomitas gourmet con imagen fresca, sabor confiable y acabado premium.</h1>
+        <p class="hero-text">
+          Diseñamos pedidos que se sienten cuidados desde la primera vista: mezcla artesanal,
+          presentacion limpia y una experiencia clara para cotizar rapido desde el celular.
+        </p>
+
+        <div class="hero-actions">
+          <a class="button button-primary" href="#cotizacion">Cotiza tu evento</a>
+          <a class="button button-secondary" href="#productos">Ver sabores</a>
+        </div>
+
+        <div class="hero-points">
+          <span>Calidad visible</span>
+          <span>Entrega confiable</span>
+          <span>Frescura crujiente</span>
+        </div>
+
+        <div class="quick-actions" aria-label="Accesos rapidos">
+          <a class="quick-action-card" href="#productos">
+            <strong>Explora sabores</strong>
+            <span>Catalogo claro y fotografiado</span>
+          </a>
+          <a class="quick-action-card" href="#cotizacion">
+            <strong>Cotiza rapido</strong>
+            <span>Selecciona piezas por sabor</span>
+          </a>
+          <a class="quick-action-card" [href]="contactWhatsappLink" target="_blank" rel="noopener">
+            <strong>Habla por WhatsApp</strong>
+            <span>Contacto directo con {{ contact.person }}</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-visual reveal reveal-delay">
+        <div class="hive-grid" aria-hidden="true"></div>
+        <div class="hero-orbit orbit-one"></div>
+        <div class="hero-orbit orbit-two"></div>
+        <div class="popcorn-cluster cluster-top" aria-hidden="true"></div>
+        <div class="popcorn-cluster cluster-bottom" aria-hidden="true"></div>
+
+        <article class="showcase-card showcase-main">
+          <span class="mini-label">Colmena favorita</span>
+          <h2>{{ featuredProduct.flavor }}</h2>
+          <p>{{ featuredProduct.description }}</p>
+        </article>
+
+        <article class="showcase-card showcase-stat">
+          <strong>Desde 50 pzas</strong>
+          <span>Formato intuitivo para pedidos moviles</span>
+        </article>
+
+        <article class="showcase-card showcase-note">
+          <strong>Miel, maiz y color limpio</strong>
+          <span>Visual premium que transmite frescura</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="section intro-band reveal">
+      <p>
+        Un recorrido corto, claro y mobile-first: primero entiendes la propuesta, luego ves sabores,
+        despues cotizas y finalmente contactas sin friccion.
+      </p>
+    </section>
+
+    <section class="section trust-section">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Calidad, confianza y frescura</p>
+        <h2>La pagina comunica una marca cuidadosa, agil y lista para responder bien en cualquier pantalla.</h2>
+      </div>
+
+      <div class="trust-grid">
+        @for (pillar of trustPillars; track pillar.title) {
+          <article class="trust-card reveal">
+            <span class="trust-accent">{{ pillar.accent }}</span>
+            <h3>{{ pillar.title }}</h3>
+            <p>{{ pillar.description }}</p>
+          </article>
+        }
+      </div>
+    </section>
+
+    <section class="section" id="productos">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Productos</p>
+        <h2>Sabores que conectan con una imagen fresca y una presentacion con nivel boutique.</h2>
+        <p>
+          Configuracion editable: saladas en {{ saltyPrice | currency:'MXN':'symbol':'1.0-0' }} y dulces en
+          {{ sweetPrice | currency:'MXN':'symbol':'1.0-0' }} por pieza.
+        </p>
+      </div>
+
+      <div class="product-grid">
+        @for (product of products; track product.flavor) {
+          <article class="product-card reveal">
+            <img [src]="product.image" [alt]="'Palomitas sabor ' + product.flavor" />
+            <div class="product-copy">
+              <span class="product-category">{{ getCategoryLabel(product.category) }}</span>
+              <h3>{{ product.flavor }}</h3>
+              <p>{{ product.description }}</p>
+              <strong>{{ product.price | currency:'MXN':'symbol':'1.0-0' }} <span>por pieza</span></strong>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+
+    <section class="section" id="servicios">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Servicios</p>
+        <h2>Atendemos desde regalos por pieza hasta producciones para eventos con ritmo y orden.</h2>
+      </div>
+
+      <div class="service-grid">
+        @for (service of services; track service.title) {
+          <article class="service-card reveal">
+            <span class="service-badge">{{ service.badge }}</span>
+            <h3>{{ service.title }}</h3>
+            <p>{{ service.description }}</p>
+            <ul>
+              @for (detail of service.details; track detail) {
+                <li>{{ detail }}</li>
+              }
+            </ul>
+          </article>
+        }
+      </div>
+    </section>
+
+    <section class="section contact-quote-grid">
+      <article class="contact-card reveal" id="contacto">
+        <div class="section-heading left">
+          <p class="eyebrow">Contacto</p>
+          <h2>Hablemos de tu pedido sin vueltas.</h2>
+        </div>
+
+        <div class="contact-list">
+          <div>
+            <span class="contact-label">Nombre de contacto</span>
+            <strong>{{ contact.person }}</strong>
+          </div>
+          <div>
+            <span class="contact-label">Correo electronico</span>
+            <a [href]="'mailto:' + contact.email">{{ contact.email }}</a>
+          </div>
+          <div>
+            <span class="contact-label">WhatsApp</span>
+            <a class="button button-whatsapp" [href]="contactWhatsappLink" target="_blank" rel="noopener">
+              Mandar mensaje por WhatsApp
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <article class="quote-card reveal reveal-delay" id="cotizacion">
+        <div class="section-heading left">
+          <p class="eyebrow">Cotizacion</p>
+          <h2>Calcula un estimado claro para tu evento.</h2>
+        </div>
+
+        <form class="quote-form">
+          <div class="quote-group-grid">
+            <section class="quote-group-card">
+              <div class="quote-group-heading">
+                <span class="quote-group-label">Saladas</span>
+                <strong>{{ saltyPrice | currency:'MXN':'symbol':'1.0-0' }} por pieza</strong>
+              </div>
+
+              <div class="quote-flavor-grid">
+                @for (product of saltyQuoteProducts; track product.flavor) {
+                  <label class="quote-flavor-card">
+                    <strong>{{ product.flavor }}</strong>
+                    <small>{{ product.price | currency:'MXN':'symbol':'1.0-0' }} por pieza</small>
+                    <input
+                      type="number"
+                      [name]="'quote-' + product.flavor"
+                      min="0"
+                      step="1"
+                      [(ngModel)]="product.quantity"
+                      (blur)="normalizeQuantity(product)"
+                    />
+                  </label>
+                }
+              </div>
+            </section>
+
+            <section class="quote-group-card">
+              <div class="quote-group-heading">
+                <span class="quote-group-label">Dulces</span>
+                <strong>{{ sweetPrice | currency:'MXN':'symbol':'1.0-0' }} por pieza</strong>
+              </div>
+
+              <div class="quote-flavor-grid">
+                @for (product of sweetQuoteProducts; track product.flavor) {
+                  <label class="quote-flavor-card">
+                    <strong>{{ product.flavor }}</strong>
+                    <small>{{ product.price | currency:'MXN':'symbol':'1.0-0' }} por pieza</small>
+                    <input
+                      type="number"
+                      [name]="'quote-' + product.flavor"
+                      min="0"
+                      step="1"
+                      [(ngModel)]="product.quantity"
+                      (blur)="normalizeQuantity(product)"
+                    />
+                  </label>
+                }
+              </div>
+            </section>
+          </div>
+
+          <div class="quote-actions">
+            <button class="button button-secondary" type="button" (click)="clearQuote()">
+              Limpiar cotizacion
+            </button>
+          </div>
+
+          <label class="checkbox-row">
+            <input type="checkbox" name="quoteDelivery" [(ngModel)]="quoteDelivery" />
+            <span>Agregar entrega a domicilio</span>
+          </label>
+        </form>
+
+        <div class="quote-summary">
+          <div>
+            <span>Total de piezas</span>
+            <strong>{{ totalQuoteQuantity }}</strong>
+          </div>
+          <div>
+            <span>Saladas</span>
+            <strong>
+              {{ saltySubtotal | currency:'MXN':'symbol':'1.0-0' }}
+            </strong>
+          </div>
+          <div>
+            <span>Dulces</span>
+            <strong>
+              {{ sweetSubtotal | currency:'MXN':'symbol':'1.0-0' }}
+            </strong>
+          </div>
+          <div class="quote-selection">
+            <span>Sabores elegidos</span>
+            @if (selectedQuoteProducts.length > 0) {
+              <ul>
+                @for (product of selectedQuoteProducts; track product.flavor) {
+                  <li>
+                    {{ product.flavor }}: {{ product.quantity }} piezas =
+                    {{ getQuoteLineTotal(product) | currency:'MXN':'symbol':'1.0-0' }}
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p>Aun no has agregado piezas por sabor.</p>
+            }
+          </div>
+          <div>
+            <span>Subtotal</span>
+            <strong>{{ subtotal | currency:'MXN':'symbol':'1.0-0' }}</strong>
+          </div>
+          <div>
+            <span>Entrega</span>
+            <strong>{{ deliveryFee | currency:'MXN':'symbol':'1.0-0' }}</strong>
+          </div>
+          <div class="quote-total">
+            <span>Total estimado</span>
+            <strong>{{ total | currency:'MXN':'symbol':'1.0-0' }}</strong>
+          </div>
+          <div class="quote-total quote-whatsapp-action">
+            <span>Enviar cotizacion</span>
+            <a
+              class="button button-whatsapp"
+              [class.button-disabled]="selectedQuoteProducts.length === 0"
+              [attr.aria-disabled]="selectedQuoteProducts.length === 0"
+              [href]="selectedQuoteProducts.length > 0 ? quoteWhatsappLink : null"
+              [attr.tabindex]="selectedQuoteProducts.length === 0 ? -1 : null"
+              target="_blank"
+              rel="noopener"
+            >
+              Mandar cotizacion por WhatsApp
+            </a>
+          </div>
+        </div>
+
+        <p class="quote-note">
+          El calculo es informativo y no reemplaza una cotizacion final. Captura cuantas piezas quieres de cada
+          sabor y el estimado separa automaticamente saladas, dulces y entrega para que todo se entienda rapido.
+        </p>
+      </article>
+    </section>
+  </main>
+
+  <nav class="mobile-hud" aria-label="Atajos moviles">
+    <a href="#productos">Sabores</a>
+    <a href="#cotizacion">Cotiza</a>
+    <a [href]="contactWhatsappLink" target="_blank" rel="noopener">WhatsApp</a>
+  </nav>
+</div>

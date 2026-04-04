@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-labelledby="title desc">
+  <title id="title">Palomitas sabor queso chipotle</title>
+  <desc id="desc">Ilustracion de un vaso con palomitas gourmet sabor queso con chipotle.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#fff2dc"/>
+      <stop offset="100%" stop-color="#ffc285"/>
+    </linearGradient>
+    <linearGradient id="cup" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#d1721d"/>
+      <stop offset="100%" stop-color="#8e3218"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="640" rx="84" fill="url(#bg)"/>
+  <circle cx="160" cy="166" r="76" fill="#fff7de" opacity="0.6"/>
+  <circle cx="508" cy="144" r="56" fill="#ffdb9e" opacity="0.7"/>
+  <g fill="#ffe6a3">
+    <circle cx="232" cy="180" r="42"/>
+    <circle cx="300" cy="138" r="50"/>
+    <circle cx="372" cy="182" r="42"/>
+    <circle cx="438" cy="150" r="48"/>
+    <circle cx="208" cy="252" r="42"/>
+    <circle cx="280" cy="244" r="46"/>
+    <circle cx="356" cy="252" r="44"/>
+    <circle cx="430" cy="232" r="42"/>
+  </g>
+  <g fill="#f08a24">
+    <circle cx="220" cy="168" r="10"/>
+    <circle cx="330" cy="152" r="12"/>
+    <circle cx="392" cy="182" r="10"/>
+    <circle cx="268" cy="236" r="12"/>
+    <circle cx="418" cy="222" r="10"/>
+  </g>
+  <g fill="#8e2d17">
+    <circle cx="252" cy="190" r="7"/>
+    <circle cx="348" cy="172" r="6"/>
+    <circle cx="384" cy="248" r="7"/>
+  </g>
+  <path d="M208 270h236l-35 208c-4 26-26 46-53 46H296c-27 0-49-20-53-46l-35-208Z" fill="url(#cup)"/>
+  <path d="M244 316h30v172h-30zm62 0h30v172h-30zm62 0h30v172h-30z" fill="#ffe8d1" opacity="0.85"/>
+  <ellipse cx="326" cy="275" rx="128" ry="18" fill="#6d2a15" opacity="0.18"/>
+</svg>

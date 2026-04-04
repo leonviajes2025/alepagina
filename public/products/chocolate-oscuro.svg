@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-labelledby="title desc">
+  <title id="title">Palomitas sabor chocolate</title>
+  <desc id="desc">Ilustracion de un vaso con palomitas gourmet cubiertas de chocolate oscuro.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#fff0e7"/>
+      <stop offset="100%" stop-color="#d9b2a0"/>
+    </linearGradient>
+    <linearGradient id="cup" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#7d2d2a"/>
+      <stop offset="100%" stop-color="#431311"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="640" rx="84" fill="url(#bg)"/>
+  <circle cx="146" cy="154" r="72" fill="#ffe0d4" opacity="0.6"/>
+  <circle cx="520" cy="180" r="60" fill="#fff5eb" opacity="0.55"/>
+  <g fill="#ffe8af">
+    <circle cx="230" cy="176" r="42"/>
+    <circle cx="298" cy="136" r="50"/>
+    <circle cx="370" cy="176" r="44"/>
+    <circle cx="444" cy="146" r="46"/>
+    <circle cx="206" cy="250" r="42"/>
+    <circle cx="280" cy="244" r="44"/>
+    <circle cx="354" cy="252" r="46"/>
+    <circle cx="428" cy="232" r="44"/>
+  </g>
+  <g fill="#4d241d">
+    <path d="M198 174c24 6 36 18 36 34-22-1-38-12-48-28 3-5 7-7 12-6Z"/>
+    <path d="M290 144c31 4 43 18 43 38-29-3-46-15-54-30 2-4 6-7 11-8Z"/>
+    <path d="M355 179c27 5 38 17 40 33-25-2-39-11-46-25 1-4 3-7 6-8Z"/>
+    <path d="M407 240c25 4 37 14 40 30-24 1-39-7-48-20 1-6 4-9 8-10Z"/>
+  </g>
+  <path d="M208 270h236l-35 208c-4 26-26 46-53 46H296c-27 0-49-20-53-46l-35-208Z" fill="url(#cup)"/>
+  <path d="M244 316h30v172h-30zm62 0h30v172h-30zm62 0h30v172h-30z" fill="#f5d6d0" opacity="0.85"/>
+  <ellipse cx="326" cy="275" rx="128" ry="18" fill="#2b1410" opacity="0.18"/>
+</svg>
