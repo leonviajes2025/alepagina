@@ -12,6 +12,10 @@
     {
       "key": "productoId",
       "value": "1"
+    },
+    {
+      "key": "pedidoId",
+      "value": "1"
     }
   ],
   "item": [
@@ -63,6 +67,20 @@
         },
         {
           "name": "POST producto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.id) {",
+                  "  pm.collectionVariables.set('productoId', String(response.id));",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -116,6 +134,20 @@
         },
         {
           "name": "POST contacto-whats",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.id) {",
+                  "  pm.collectionVariables.set('pedidoId', String(response.id));",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -126,9 +158,31 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"cotizacion\": \"Necesito una cotizacion para 20 piezas del Producto Base\"\n}"
+              "raw": "{\n  \"nombre\": null,\n  \"cotizacion\": \"Necesito una cotizacion para 20 piezas del Producto Base\"\n}"
             },
             "url": "{{baseUrl}}/api/contactos-whats"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cotizacion Detalle",
+      "item": [
+        {
+          "name": "POST cotizacion-detalle",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idPedido\": {{pedidoId}},\n  \"idProducto\": {{productoId}},\n  \"numeroPiezas\": 20\n}"
+            },
+            "url": "{{baseUrl}}/api/cotizacion-detalle"
           }
         }
       ]

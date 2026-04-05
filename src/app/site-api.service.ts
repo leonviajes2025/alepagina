@@ -33,6 +33,21 @@ export type ContactLeadRequest = {
   aceptaPromociones: boolean;
 };
 
+export type WhatsappQuoteRequest = {
+  nombre: string | null;
+  cotizacion: string;
+};
+
+export type WhatsappQuoteResponse = {
+  id?: number | string;
+};
+
+export type QuoteDetailRequest = {
+  idPedido: number;
+  idProducto: number;
+  numeroPiezas: number;
+};
+
 type ProductsResponse = unknown;
 
 @Injectable({ providedIn: 'root' })
@@ -46,8 +61,12 @@ export class SiteApiService {
       .pipe(map((response) => this.extractProducts(response)));
   }
 
-  submitWhatsappQuote(cotizacion: string): Observable<unknown> {
-    return this.http.post(`${this.baseUrl}/contactos-whats`, { cotizacion });
+  submitWhatsappQuote(payload: WhatsappQuoteRequest): Observable<WhatsappQuoteResponse> {
+    return this.http.post<WhatsappQuoteResponse>(`${this.baseUrl}/contactos-whats`, payload);
+  }
+
+  createQuoteDetail(payload: QuoteDetailRequest): Observable<unknown> {
+    return this.http.post(`${this.baseUrl}/cotizacion-detalle`, payload);
   }
 
   createContact(payload: ContactLeadRequest): Observable<unknown> {

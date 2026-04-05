@@ -27,6 +27,7 @@ describe('AppComponent', () => {
 
     request.flush([
       {
+        id: 11,
         nombre: 'Esquite',
         categoria: 'salada',
         descripcion: 'Producto remoto',
@@ -35,6 +36,7 @@ describe('AppComponent', () => {
         activo: true
       },
       {
+        id: 12,
         nombre: 'Caramelo',
         categoria: 'dulce',
         descripcion: 'Producto remoto dulce',
@@ -128,6 +130,16 @@ describe('AppComponent', () => {
     expect(decodedMessage).toContain(`Total estimado: $${app.total}`);
   });
 
+  it('should include the optional name in the quote message when provided', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    app.quoteCustomerName = 'Ana Perez';
+    app.quoteProducts[0].quantity = 2;
+
+    expect(app.quoteRequestText).toContain('Nombre: Ana Perez');
+  });
+
   it('should group quote products by salty and sweet categories', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
@@ -178,6 +190,7 @@ describe('AppComponent', () => {
       data: {
         rows: [
           {
+            id: '25',
             name: 'Chocolate oscuro',
             category: 'sweet',
             description: 'Producto remoto alterno',
@@ -199,27 +212,78 @@ describe('AppComponent', () => {
 
     expect(app.products.length).toBe(1);
     expect(app.products[0].flavor).toBe('Chocolate oscuro');
+    expect(app.products[0].id).toBe(25);
     expect(app.products[0].category).toBe('dulce');
     expect(app.products[0].price).toBe(41.5);
     expect(app.products[0].description).toBe('Producto remoto alterno');
   });
 
-  it('should register the WhatsApp quote before opening the chat', () => {
+  it('should register the WhatsApp quote detail before opening the chat', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     const openSpy = spyOn(window, 'open');
 
+    fixture.detectChanges();
+    flushProductsRequest();
+
+    app.quoteCustomerName = 'Ana Perez';
     app.quoteProducts[0].quantity = 3;
     app.submitQuoteRequest();
 
       const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/contactos-whats`);
     expect(request.request.method).toBe('POST');
+    expect(request.request.body.nombre).toBe('Ana Perez');
     expect(request.request.body.cotizacion).toContain('Total de piezas: 3');
 
-    request.flush({ ok: true });
+    request.flush({ id: 77 });
+
+    const detailRequest = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/cotizacion-detalle`);
+    expect(detailRequest.request.method).toBe('POST');
+    expect(detailRequest.request.body).toEqual({
+      idPedido: 77,
+      idProducto: 11,
+      numeroPiezas: 3
+    });
+
+    detailRequest.flush({ ok: true });
 
     expect(app.quoteRequestState).toBe('success');
     expect(openSpy).toHaveBeenCalled();
+  });
+
+  it('should not submit the quote when products are only available from the fallback catalog', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    app.quoteProducts[0].quantity = 2;
+
+    expect(app.productsLoadedFromApi).toBeFalse();
+    expect(app.canSubmitQuoteRequest).toBeFalse();
+
+    app.submitQuoteRequest();
+
+    httpTestingController.expectNone(`${siteConfig.apiBaseUrl}/contactos-whats`);
+    httpTestingController.expectNone(`${siteConfig.apiBaseUrl}/cotizacion-detalle`);
+  });
+
+  it('should send null as the optional quote name when it is empty', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    fixture.detectChanges();
+    flushProductsRequest();
+
+    app.quoteCustomerName = '   ';
+    app.quoteProducts[0].quantity = 1;
+    app.submitQuoteRequest();
+
+    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/contactos-whats`);
+    expect(request.request.body.nombre).toBeNull();
+
+    request.flush({ id: 91 });
+
+    const detailRequest = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/cotizacion-detalle`);
+    detailRequest.flush({ ok: true });
   });
 
   it('should send the contact form to the contactos endpoint', () => {

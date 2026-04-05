@@ -1,11 +1,12 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { finalize } from 'rxjs';
-import { SiteApiService, type ApiProductDto } from './site-api.service';
+import { finalize, forkJoin, of, switchMap, throwError } from 'rxjs';
+import { SiteApiService, type ApiProductDto, type QuoteDetailRequest } from './site-api.service';
 import { siteConfig, type ProductCategory, type ProductConfig } from './site.config';
 
 type Product = {
+  id?: number;
   image: string;
   flavor: string;
   description: string;
@@ -66,9 +67,13 @@ export class AppComponent implements OnInit {
 
   productsError = '';
 
+  productsLoadedFromApi = false;
+
   quoteRequestState: RequestState = 'idle';
 
   quoteRequestMessage = '';
+
+  quoteCustomerName = '';
 
   contactRequestState: RequestState = 'idle';
 
@@ -182,6 +187,12 @@ export class AppComponent implements OnInit {
     return this.subtotal + this.deliveryFee;
   }
 
+  get canSubmitQuoteRequest(): boolean {
+    return this.selectedQuoteProducts.length > 0
+      && this.quoteRequestState !== 'loading'
+      && this.productsLoadedFromApi;
+  }
+
   get isContactFormValid(): boolean {
     return this.contactForm.nombre.trim().length > 0
       && this.contactForm.email.trim().length > 0
@@ -197,8 +208,10 @@ export class AppComponent implements OnInit {
       ? this.selectedQuoteProducts.map((product) => `- ${product.flavor}: ${product.quantity} piezas`).join('\n')
       : 'Sin sabores seleccionados todavia.';
 
+    const customerName = this.quoteCustomerName.trim();
     const quoteDetails = [
       'Hola, me interesa una cotizacion de palomitas gourmet para mi evento.',
+      ...(customerName ? [`Nombre: ${customerName}`] : []),
       'Sabores solicitados:',
       selectedFlavors,
       `Total de piezas: ${this.totalQuoteQuantity}`,
@@ -241,22 +254,47 @@ export class AppComponent implements OnInit {
     }
 
     this.quoteDelivery = false;
+    this.quoteCustomerName = '';
   }
 
   submitQuoteRequest(): void {
-    if (this.selectedQuoteProducts.length === 0 || this.quoteRequestState === 'loading') {
+    if (!this.canSubmitQuoteRequest) {
       return;
     }
 
     this.quoteRequestState = 'loading';
     this.quoteRequestMessage = '';
 
-    this.api.submitWhatsappQuote(this.quoteRequestText)
-      .pipe(finalize(() => {
-        if (this.quoteRequestState === 'loading') {
-          this.quoteRequestState = 'idle';
-        }
-      }))
+    this.api.submitWhatsappQuote({
+      nombre: this.resolveOptionalQuoteName(),
+      cotizacion: this.quoteRequestText
+    })
+      .pipe(
+        switchMap((response) => {
+          const pedidoId = this.resolveNumericId(response.id);
+
+          if (pedidoId == null) {
+            return throwError(() => new Error('La API no devolvio un id de cotizacion valido.'));
+          }
+
+          const detailPayloads = this.buildQuoteDetailPayloads(pedidoId);
+
+          if (detailPayloads.length !== this.selectedQuoteProducts.length) {
+            return throwError(() => new Error('No todos los productos tienen un id valido para guardar el detalle.'));
+          }
+
+          if (detailPayloads.length === 0) {
+            return of([]);
+          }
+
+          return forkJoin(detailPayloads.map((payload) => this.api.createQuoteDetail(payload)));
+        }),
+        finalize(() => {
+          if (this.quoteRequestState === 'loading') {
+            this.quoteRequestState = 'idle';
+          }
+        })
+      )
       .subscribe({
         next: () => {
           this.quoteRequestState = 'success';
@@ -315,6 +353,12 @@ export class AppComponent implements OnInit {
     return Math.round(value);
   }
 
+  private resolveOptionalQuoteName(): string | null {
+    const normalizedName = this.quoteCustomerName.trim();
+
+    return normalizedName.length > 0 ? normalizedName : null;
+  }
+
   private buildWhatsappLink(message: string): string {
     return `https://wa.me/${this.contact.whatsappNumber}?text=${encodeURIComponent(message)}`;
   }
@@ -322,6 +366,7 @@ export class AppComponent implements OnInit {
   private loadProducts(): void {
     this.productsLoading = true;
     this.productsError = '';
+    this.productsLoadedFromApi = false;
 
     this.api.getProducts()
       .pipe(finalize(() => {
@@ -338,6 +383,7 @@ export class AppComponent implements OnInit {
 
           this.products = mappedProducts;
           this.quoteProducts = this.createQuoteProducts(mappedProducts);
+          this.productsLoadedFromApi = true;
         },
         error: () => {
           this.productsError = 'No fue posible cargar los productos desde la API. Se muestra el catalogo base.';
@@ -368,6 +414,7 @@ export class AppComponent implements OnInit {
         const category = this.resolveCategory(this.resolveRawCategory(product), fallback?.category);
 
         return {
+          id: this.resolveNumericId(product.id),
           flavor: flavor || fallback?.flavor || 'Producto gourmet',
           category,
           description: this.resolveDescription(product) || fallback?.description || 'Producto disponible para cotizacion inmediata.',
@@ -399,6 +446,38 @@ export class AppComponent implements OnInit {
 
   private resolveRawPrice(product: ApiProductDto): number | string | undefined {
     return product.precio ?? product.price;
+  }
+
+  private buildQuoteDetailPayloads(idPedido: number): QuoteDetailRequest[] {
+    return this.selectedQuoteProducts
+      .map((product) => {
+        if (product.id == null) {
+          return undefined;
+        }
+
+        return {
+          idPedido,
+          idProducto: product.id,
+          numeroPiezas: product.quantity
+        };
+      })
+      .filter((payload): payload is QuoteDetailRequest => payload !== undefined);
+  }
+
+  private resolveNumericId(value: number | string | undefined): number | undefined {
+    if (typeof value === 'number' && Number.isInteger(value) && value > 0) {
+      return value;
+    }
+
+    if (typeof value === 'string') {
+      const parsedValue = Number.parseInt(value.trim(), 10);
+
+      if (Number.isInteger(parsedValue) && parsedValue > 0) {
+        return parsedValue;
+      }
+    }
+
+    return undefined;
   }
 
   private readFirstString(...values: Array<string | undefined>): string {

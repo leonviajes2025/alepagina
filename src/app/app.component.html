@@ -376,16 +376,27 @@
             <span>Total estimado</span>
             <strong>{{ total | currency:'MXN':'symbol':'1.0-0' }}</strong>
           </div>
-          <div class="quote-total quote-whatsapp-action">
+          <div class="quote-whatsapp-action">
             <span>Enviar cotizacion</span>
-            <button
-              class="button button-whatsapp"
-              type="button"
-              [class.button-disabled]="selectedQuoteProducts.length === 0 || quoteRequestState === 'loading'"
-              [disabled]="selectedQuoteProducts.length === 0 || quoteRequestState === 'loading'"
-              (click)="submitQuoteRequest()">
-              {{ quoteRequestState === 'loading' ? 'Enviando...' : 'Mandar cotizacion por WhatsApp' }}
-            </button>
+            <div class="quote-submit-row">
+              <label class="quote-contact-field">
+                <span>Nombre para la cotizacion</span>
+                <input
+                  type="text"
+                  name="quoteCustomerName"
+                  [(ngModel)]="quoteCustomerName"
+                  placeholder="Opcional"
+                />
+              </label>
+              <button
+                class="button button-whatsapp"
+                type="button"
+                [class.button-disabled]="!canSubmitQuoteRequest"
+                [disabled]="!canSubmitQuoteRequest"
+                (click)="submitQuoteRequest()">
+                {{ quoteRequestState === 'loading' ? 'Enviando...' : 'Mandar cotizacion por WhatsApp' }}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -395,6 +406,12 @@
             [class.status-banner-success]="quoteRequestState === 'success'"
             [class.status-banner-error]="quoteRequestState === 'error'">
             {{ quoteRequestMessage }}
+          </p>
+        }
+
+        @if (selectedQuoteProducts.length > 0 && !productsLoadedFromApi && !productsLoading) {
+          <p class="status-banner status-banner-warning">
+            Activa la cotizacion solo con productos cargados desde la API. Revisa la conexion e intenta nuevamente.
           </p>
         }
 
