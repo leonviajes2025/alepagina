@@ -15,6 +15,7 @@ export const siteConfig = {
   contactEmail: 'hola@nubemaizgourmet.mx',
   whatsappNumber: '5569852630',
   apiBaseUrl: environment.apiBaseUrl,
+  apiDiagnosticsEnabled: environment.apiDiagnosticsEnabled,
   productPrices: {
     salty: 30,
     sweet: 35

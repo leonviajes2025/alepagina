@@ -125,7 +125,7 @@
         <p class="status-banner status-banner-warning reveal">{{ productsError }}</p>
       }
 
-      @if (apiConnectionDiagnostic.summary) {
+      @if (apiDiagnosticsEnabled && apiConnectionDiagnostic.summary) {
         <article
           class="status-banner api-diagnostic-panel"
           [class.status-banner-info]="apiConnectionDiagnostic.status === 'checking'"

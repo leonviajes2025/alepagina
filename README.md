@@ -53,6 +53,9 @@ The project is ready to deploy as a static Angular application on Vercel.
 - For a frontend deployed on Vercel, prefer `NG_APP_API_BASE_URL=/api`.
 - The provided `vercel.json` rewrites `/api/*` to `https://back-2-hazel.vercel.app/api/*`, which avoids browser CORS issues because the frontend calls its own origin.
 - Only use a full remote URL such as `https://back-2-hazel.vercel.app/api` if the backend already allows CORS from your Vercel domain.
+- The API diagnostic panel is controlled by `apiDiagnosticsEnabled` in the environment files.
+- Local development enables it by default in `src/environments/environment.development.ts`.
+- Production disables it by default, but you can temporarily enable it during a Vercel build with `NG_APP_API_DIAGNOSTICS=true`.
 
 ## Running unit tests
 

@@ -226,6 +226,10 @@ export class AppComponent implements OnInit {
     return this.api.apiBaseUrl;
   }
 
+  get apiDiagnosticsEnabled(): boolean {
+    return this.config.apiDiagnosticsEnabled;
+  }
+
   get productsEndpoint(): string {
     return `${this.apiBaseUrl}/productos/activos`;
   }
