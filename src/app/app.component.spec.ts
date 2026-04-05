@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { AppComponent } from './app.component';
+import { contenidoHero } from './content/hero.content';
 import { siteConfig } from './site.config';
 
 describe('AppComponent', () => {
@@ -65,7 +66,7 @@ describe('AppComponent', () => {
     flushProductsRequest();
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Palomitas gourmet');
+    expect(compiled.querySelector('h1')?.textContent).toContain(contenidoHero.titulo);
   });
 
   it('should toggle the mobile menu state', () => {
@@ -134,7 +135,7 @@ describe('AppComponent', () => {
     expect(decodedMessage).toContain('- Esquite: 12 piezas');
     expect(decodedMessage).toContain('- Caramelo: 8 piezas');
     expect(decodedMessage).toContain('Total de piezas: 20');
-    expect(decodedMessage).toContain('Entrega: Si');
+    expect(decodedMessage).toContain('Entrega: Sí');
     expect(decodedMessage).toContain(`Total estimado: $${app.total}`);
   });
 

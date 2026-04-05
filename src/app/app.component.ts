@@ -2,6 +2,14 @@ import { CurrencyPipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize, forkJoin, of, switchMap, throwError } from 'rxjs';
+import { contenidoSeccionContacto } from './content/contact.content';
+import { contenidoHero } from './content/hero.content';
+import { contenidoIntroduccion } from './content/intro.content';
+import { contenidoNavegacion } from './content/navigation.content';
+import { contenidoSeccionProductos } from './content/products.content';
+import { contenidoSeccionCotizacion } from './content/quote.content';
+import { contenidoSeccionServicios } from './content/services.content';
+import { contenidoSeccionConfianza } from './content/trust.content';
 import { SiteApiService, type ApiProductDto, type ContactLeadRequest, type QuoteDetailRequest } from './site-api.service';
 import { siteConfig, type ProductCategory, type ProductConfig } from './site.config';
 
@@ -28,19 +36,6 @@ type ContactFormModel = {
   pregunta: string;
 };
 
-type Service = {
-  title: string;
-  description: string;
-  badge: string;
-  details: string[];
-};
-
-type TrustPillar = {
-  title: string;
-  description: string;
-  accent: string;
-};
-
 @Component({
   selector: 'app-root',
   imports: [CurrencyPipe, FormsModule],
@@ -52,6 +47,14 @@ export class AppComponent implements OnInit {
   private readonly blockedQuoteKeys = new Set(['-', '+', 'e', 'E', '.', ',']);
 
   readonly config = siteConfig;
+  readonly navegacion = contenidoNavegacion;
+  readonly seccionHero = contenidoHero;
+  readonly seccionIntroduccion = contenidoIntroduccion;
+  readonly seccionConfianza = contenidoSeccionConfianza;
+  readonly seccionProductos = contenidoSeccionProductos;
+  readonly seccionServicios = contenidoSeccionServicios;
+  readonly seccionContacto = contenidoSeccionContacto;
+  readonly seccionCotizacion = contenidoSeccionCotizacion;
 
   readonly brand = this.config.companyName;
 
@@ -89,46 +92,9 @@ export class AppComponent implements OnInit {
     pregunta: ''
   };
 
-  readonly trustPillars: TrustPillar[] = [
-    {
-      title: 'Calidad artesanal',
-      description: 'Ingredientes seleccionados, mezclas consistentes y presentacion cuidada en cada bolsa.',
-      accent: 'Miel dorada'
-    },
-    {
-      title: 'Confianza para eventos',
-      description: 'Pedidos claros, calculo rapido y comunicacion directa para evitar sorpresas el dia de tu entrega.',
-      accent: 'Ruta segura'
-    },
-    {
-      title: 'Frescura visible',
-      description: 'Palomitas crujientes con acabado limpio, pensadas para lucir bien en vitrina, regalo o mesa dulce.',
-      accent: 'Recien hechas'
-    }
-  ];
+  readonly pilaresConfianza = this.seccionConfianza.pilares;
 
-  readonly services: Service[] = [
-    {
-      title: 'Venta por pieza',
-      badge: 'Entrega rapida',
-      description: 'Bolsas individuales listas para regalar, vender o acompañar una mesa de postres.',
-      details: [
-        'Sabores de temporada y clasicos',
-        'Presentacion individual premium',
-        'Pedidos desde 6 piezas'
-      ]
-    },
-    {
-      title: 'Eventos y mayoreo',
-      badge: 'Cotizacion flexible',
-      description: 'Armamos pedidos para bodas, corporativos, lanzamientos y celebraciones familiares.',
-      details: [
-        'Descuento por volumen',
-        'Etiquetado personalizado',
-        'Opcion con entrega a domicilio'
-      ]
-    }
-  ];
+  readonly servicios = this.seccionServicios.servicios;
 
   quoteDelivery = true;
 
@@ -203,25 +169,25 @@ export class AppComponent implements OnInit {
   }
 
   get contactWhatsappLink(): string {
-    return this.buildWhatsappLink('Hola necesito mas informacion sobre la venta de palomitas');
+    return this.buildWhatsappLink(this.seccionContacto.mensajeWhatsapp);
   }
 
   get quoteRequestText(): string {
     const selectedFlavors = this.selectedQuoteProducts.length > 0
       ? this.selectedQuoteProducts.map((product) => `- ${product.flavor}: ${product.quantity} piezas`).join('\n')
-      : 'Sin sabores seleccionados todavia.';
+      : this.seccionCotizacion.mensajeSolicitud.mensajeSinSabores;
 
     const customerName = this.quoteCustomerName.trim();
     const quoteDetails = [
-      'Hola, me interesa una cotizacion de palomitas gourmet para mi evento.',
-      ...(customerName ? [`Nombre: ${customerName}`] : []),
-      'Sabores solicitados:',
+      this.seccionCotizacion.mensajeSolicitud.introduccion,
+      ...(customerName ? [`${this.seccionCotizacion.mensajeSolicitud.etiquetaNombre}: ${customerName}`] : []),
+      this.seccionCotizacion.mensajeSolicitud.etiquetaSabores,
       selectedFlavors,
-      `Total de piezas: ${this.totalQuoteQuantity}`,
-      `Subtotal saladas: $${this.saltySubtotal}`,
-      `Subtotal dulces: $${this.sweetSubtotal}`,
-      `Entrega: ${this.quoteDelivery ? 'Si' : 'No'}`,
-      `Total estimado: $${this.total}`
+      `${this.seccionCotizacion.mensajeSolicitud.etiquetaTotalPiezas}: ${this.totalQuoteQuantity}`,
+      `${this.seccionCotizacion.mensajeSolicitud.etiquetaSubtotalSaladas}: $${this.saltySubtotal}`,
+      `${this.seccionCotizacion.mensajeSolicitud.etiquetaSubtotalDulces}: $${this.sweetSubtotal}`,
+      `${this.seccionCotizacion.mensajeSolicitud.etiquetaEntrega}: ${this.quoteDelivery ? this.seccionCotizacion.mensajeSolicitud.etiquetaEntregaSi : this.seccionCotizacion.mensajeSolicitud.etiquetaEntregaNo}`,
+      `${this.seccionCotizacion.mensajeSolicitud.etiquetaTotalEstimado}: $${this.total}`
     ].join('\n');
 
     return quoteDetails;
@@ -283,13 +249,13 @@ export class AppComponent implements OnInit {
           const pedidoId = this.resolveNumericId(response.id);
 
           if (pedidoId == null) {
-            return throwError(() => new Error('La API no devolvio un id de cotizacion valido.'));
+            return throwError(() => new Error('La API no devolvió un id de cotización válido.'));
           }
 
           const detailPayloads = this.buildQuoteDetailPayloads(pedidoId);
 
           if (detailPayloads.length !== this.selectedQuoteProducts.length) {
-            return throwError(() => new Error('No todos los productos tienen un id valido para guardar el detalle.'));
+            return throwError(() => new Error('No todos los productos tienen un id válido para guardar el detalle.'));
           }
 
           if (detailPayloads.length === 0) {
@@ -307,12 +273,12 @@ export class AppComponent implements OnInit {
       .subscribe({
         next: () => {
           this.quoteRequestState = 'success';
-          this.quoteRequestMessage = 'Cotizacion registrada. Abrimos WhatsApp para continuar la conversacion.';
+          this.quoteRequestMessage = this.seccionCotizacion.mensajeExito;
           window.open(this.buildWhatsappLink(this.quoteRequestText), '_blank', 'noopener');
         },
         error: () => {
           this.quoteRequestState = 'error';
-          this.quoteRequestMessage = 'No fue posible registrar la cotizacion por ahora. Intenta nuevamente.';
+          this.quoteRequestMessage = this.seccionCotizacion.mensajeError;
         }
       });
   }
@@ -334,7 +300,7 @@ export class AppComponent implements OnInit {
       .subscribe({
         next: () => {
           this.contactRequestState = 'success';
-          this.contactRequestMessage = 'Gracias. Tus datos fueron registrados correctamente.';
+          this.contactRequestMessage = this.seccionContacto.formularioContacto.mensajeExito;
           this.contactForm = {
             nombre: '',
             email: '',
@@ -345,7 +311,7 @@ export class AppComponent implements OnInit {
         },
         error: () => {
           this.contactRequestState = 'error';
-          this.contactRequestMessage = 'No se pudo registrar tu contacto. Intenta nuevamente.';
+          this.contactRequestMessage = this.seccionContacto.formularioContacto.mensajeError;
         }
       });
   }
@@ -404,7 +370,7 @@ export class AppComponent implements OnInit {
           const mappedProducts = this.mapApiProducts(products);
 
           if (mappedProducts.length === 0) {
-            this.productsError = 'La API no devolvio productos validos. Se muestra el catalogo base.';
+            this.productsError = this.seccionProductos.mensajeProductosInvalidos;
             return;
           }
 
@@ -413,7 +379,7 @@ export class AppComponent implements OnInit {
           this.productsLoadedFromApi = true;
         },
         error: () => {
-          this.productsError = 'No fue posible cargar los productos desde la API. Se muestra el catalogo base.';
+          this.productsError = this.seccionProductos.mensajeProductosNoDisponibles;
         }
       });
   }
@@ -444,7 +410,7 @@ export class AppComponent implements OnInit {
           id: this.resolveNumericId(product.id),
           flavor: flavor || fallback?.flavor || 'Producto gourmet',
           category,
-          description: this.resolveDescription(product) || fallback?.description || 'Producto disponible para cotizacion inmediata.',
+          description: this.resolveDescription(product) || fallback?.description || 'Producto disponible para cotización inmediata.',
           image: this.resolveImage(this.resolveRawImage(product), fallback?.image, category),
           price: this.resolvePrice(this.resolveRawPrice(product), category)
         };

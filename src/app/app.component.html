@@ -4,7 +4,7 @@
       <span class="brand-mark">B</span>
       <span class="brand-copy">
         <strong>{{ brand }}</strong>
-        <small>Palomitas gourmet</small>
+        <small>{{ navegacion.lemaMarca }}</small>
       </span>
     </a>
 
@@ -13,56 +13,50 @@
       type="button"
       [attr.aria-expanded]="mobileMenuOpen"
       aria-controls="site-nav"
-      aria-label="Abrir menu principal"
+      [attr.aria-label]="navegacion.ariaMenu"
       (click)="toggleMobileMenu()">
       <span></span>
       <span></span>
       <span></span>
     </button>
 
-    <nav class="site-nav" id="site-nav" aria-label="Principal" [class.site-nav-open]="mobileMenuOpen">
-      <a href="#inicio" (click)="closeMobileMenu()">Inicio</a>
-      <a href="#productos" (click)="closeMobileMenu()">Sabores</a>
-      <a href="#servicios" (click)="closeMobileMenu()">Eventos</a>
-      <a href="#dejanos-tu-contacto" (click)="closeMobileMenu()">Dejanos tu contacto</a>
-      <a href="#contacto" (click)="closeMobileMenu()">Contacto</a>
-      <a href="#cotizacion" (click)="closeMobileMenu()">Cotiza</a>
+    <nav class="site-nav" id="site-nav" [attr.aria-label]="navegacion.ariaNavegacion" [class.site-nav-open]="mobileMenuOpen">
+      @for (enlace of navegacion.enlacesPrincipales; track enlace.ancla) {
+        <a [href]="enlace.ancla" (click)="closeMobileMenu()">{{ enlace.etiqueta }}</a>
+      }
     </nav>
   </header>
 
   <main>
     <section class="hero section" id="inicio">
       <div class="hero-copy reveal">
-        <p class="eyebrow">Inspirado en abejas, miel y palomitas recien hechas</p>
-        <h1>Palomitas gourmet con imagen fresca, sabor confiable y acabado premium.</h1>
-        <p class="hero-text">
-          Diseñamos pedidos que se sienten cuidados desde la primera vista: mezcla artesanal,
-          presentacion limpia y una experiencia clara para cotizar rapido desde el celular.
-        </p>
+        <p class="eyebrow">{{ seccionHero.sobretitulo }}</p>
+        <h1>{{ seccionHero.titulo }}</h1>
+        <p class="hero-text">{{ seccionHero.descripcion }}</p>
 
         <div class="hero-actions">
-          <a class="button button-primary" href="#cotizacion">Cotiza tu evento</a>
-          <a class="button button-secondary" href="#productos">Ver sabores</a>
+          <a class="button button-primary" [href]="seccionHero.accionPrincipal.ancla">{{ seccionHero.accionPrincipal.etiqueta }}</a>
+          <a class="button button-secondary" [href]="seccionHero.accionSecundaria.ancla">{{ seccionHero.accionSecundaria.etiqueta }}</a>
         </div>
 
         <div class="hero-points">
-          <span>Calidad visible</span>
-          <span>Entrega confiable</span>
-          <span>Frescura crujiente</span>
+          @for (punto of seccionHero.puntos; track punto) {
+            <span>{{ punto }}</span>
+          }
         </div>
 
-        <div class="quick-actions" aria-label="Accesos rapidos">
-          <a class="quick-action-card" href="#productos">
-            <strong>Explora sabores</strong>
-            <span>Catalogo claro y fotografiado</span>
+        <div class="quick-actions" [attr.aria-label]="navegacion.ariaAccesosRapidos">
+          <a class="quick-action-card" [href]="seccionHero.accesosRapidos.productos.ancla">
+            <strong>{{ seccionHero.accesosRapidos.productos.titulo }}</strong>
+            <span>{{ seccionHero.accesosRapidos.productos.descripcion }}</span>
           </a>
-          <a class="quick-action-card" href="#cotizacion">
-            <strong>Cotiza rapido</strong>
-            <span>Selecciona piezas por sabor</span>
+          <a class="quick-action-card" [href]="seccionHero.accesosRapidos.cotizacion.ancla">
+            <strong>{{ seccionHero.accesosRapidos.cotizacion.titulo }}</strong>
+            <span>{{ seccionHero.accesosRapidos.cotizacion.descripcion }}</span>
           </a>
           <a class="quick-action-card" [href]="contactWhatsappLink" target="_blank" rel="noopener">
-            <strong>Habla por WhatsApp</strong>
-            <span>Contacto directo con {{ contact.person }}</span>
+            <strong>{{ seccionHero.accesosRapidos.whatsapp.titulo }}</strong>
+            <span>{{ seccionHero.accesosRapidos.whatsapp.prefijoDescripcion }}{{ contact.person }}</span>
           </a>
         </div>
       </div>
@@ -75,42 +69,39 @@
         <div class="popcorn-cluster cluster-bottom" aria-hidden="true"></div>
 
         <article class="showcase-card showcase-main">
-          <span class="mini-label">Colmena favorita</span>
+          <span class="mini-label">{{ seccionHero.vitrina.etiquetaDestacada }}</span>
           <h2>{{ featuredProduct.flavor }}</h2>
           <p>{{ featuredProduct.description }}</p>
         </article>
 
         <article class="showcase-card showcase-stat">
-          <strong>Desde 50 pzas</strong>
-          <span>Formato intuitivo para pedidos moviles</span>
+          <strong>{{ seccionHero.vitrina.tituloDato }}</strong>
+          <span>{{ seccionHero.vitrina.descripcionDato }}</span>
         </article>
 
         <article class="showcase-card showcase-note">
-          <strong>Miel, maiz y color limpio</strong>
-          <span>Visual premium que transmite frescura</span>
+          <strong>{{ seccionHero.vitrina.tituloNota }}</strong>
+          <span>{{ seccionHero.vitrina.descripcionNota }}</span>
         </article>
       </div>
     </section>
 
     <section class="section intro-band reveal">
-      <p>
-        Un recorrido corto, claro y mobile-first: primero entiendes la propuesta, luego ves sabores,
-        despues cotizas y finalmente contactas sin friccion.
-      </p>
+      <p>{{ seccionIntroduccion.descripcion }}</p>
     </section>
 
     <section class="section trust-section">
       <div class="section-heading reveal">
-        <p class="eyebrow">Calidad, confianza y frescura</p>
-        <h2>La pagina comunica una marca cuidadosa, agil y lista para responder bien en cualquier pantalla.</h2>
+        <p class="eyebrow">{{ seccionConfianza.sobretitulo }}</p>
+        <h2>{{ seccionConfianza.titulo }}</h2>
       </div>
 
       <div class="trust-grid">
-        @for (pillar of trustPillars; track pillar.title) {
+        @for (pilar of pilaresConfianza; track pilar.titulo) {
           <article class="trust-card reveal">
-            <span class="trust-accent">{{ pillar.accent }}</span>
-            <h3>{{ pillar.title }}</h3>
-            <p>{{ pillar.description }}</p>
+            <span class="trust-accent">{{ pilar.acento }}</span>
+            <h3>{{ pilar.titulo }}</h3>
+            <p>{{ pilar.descripcion }}</p>
           </article>
         }
       </div>
@@ -118,16 +109,16 @@
 
     <section class="section" id="productos">
       <div class="section-heading reveal">
-        <p class="eyebrow">Productos</p>
-        <h2>Sabores que conectan con una imagen fresca y una presentacion con nivel boutique.</h2>
+        <p class="eyebrow">{{ seccionProductos.sobretitulo }}</p>
+        <h2>{{ seccionProductos.titulo }}</h2>
         <p>
-          Configuracion editable: saladas en {{ saltyPrice | currency:'MXN':'symbol':'1.0-0' }} y dulces en
-          {{ sweetPrice | currency:'MXN':'symbol':'1.0-0' }} por pieza.
+          {{ seccionProductos.prefijoConfiguracion }} {{ saltyPrice | currency:'MXN':'symbol':'1.0-0' }} {{ seccionProductos.conectorConfiguracion }}
+          {{ sweetPrice | currency:'MXN':'symbol':'1.0-0' }} {{ seccionProductos.sufijoConfiguracion }}
         </p>
       </div>
 
       @if (productsLoading) {
-        <p class="status-banner status-banner-info reveal">Cargando productos desde la API...</p>
+        <p class="status-banner status-banner-info reveal">{{ seccionProductos.mensajeCarga }}</p>
       }
 
       @if (productsError) {
@@ -142,7 +133,7 @@
               <span class="product-category">{{ getCategoryLabel(product.category) }}</span>
               <h3>{{ product.flavor }}</h3>
               <p>{{ product.description }}</p>
-              <strong>{{ product.price | currency:'MXN':'symbol':'1.0-0' }} <span>por pieza</span></strong>
+              <strong>{{ product.price | currency:'MXN':'symbol':'1.0-0' }} <span>{{ seccionProductos.sufijoPrecio }}</span></strong>
             </div>
           </article>
         }
@@ -151,19 +142,19 @@
 
     <section class="section" id="servicios">
       <div class="section-heading reveal">
-        <p class="eyebrow">Servicios</p>
-        <h2>Atendemos desde regalos por pieza hasta producciones para eventos con ritmo y orden.</h2>
+        <p class="eyebrow">{{ seccionServicios.sobretitulo }}</p>
+        <h2>{{ seccionServicios.titulo }}</h2>
       </div>
 
       <div class="service-grid">
-        @for (service of services; track service.title) {
+        @for (servicio of servicios; track servicio.titulo) {
           <article class="service-card reveal">
-            <span class="service-badge">{{ service.badge }}</span>
-            <h3>{{ service.title }}</h3>
-            <p>{{ service.description }}</p>
+            <span class="service-badge">{{ servicio.distintivo }}</span>
+            <h3>{{ servicio.titulo }}</h3>
+            <p>{{ servicio.descripcion }}</p>
             <ul>
-              @for (detail of service.details; track detail) {
-                <li>{{ detail }}</li>
+              @for (detalle of servicio.detalles; track detalle) {
+                <li>{{ detalle }}</li>
               }
             </ul>
           </article>
@@ -174,23 +165,23 @@
     <section class="section contact-quote-grid">
       <article class="contact-card reveal" id="contacto">
         <div class="section-heading left">
-          <p class="eyebrow">Contacto</p>
-          <h2>Hablemos de tu pedido sin vueltas.</h2>
+          <p class="eyebrow">{{ seccionContacto.tarjetaContacto.sobretitulo }}</p>
+          <h2>{{ seccionContacto.tarjetaContacto.titulo }}</h2>
         </div>
 
         <div class="contact-list">
           <div>
-            <span class="contact-label">Nombre de contacto</span>
+            <span class="contact-label">{{ seccionContacto.tarjetaContacto.etiquetas.nombre }}</span>
             <strong>{{ contact.person }}</strong>
           </div>
           <div>
-            <span class="contact-label">Correo electronico</span>
+            <span class="contact-label">{{ seccionContacto.tarjetaContacto.etiquetas.correo }}</span>
             <a [href]="'mailto:' + contact.email">{{ contact.email }}</a>
           </div>
           <div>
-            <span class="contact-label">WhatsApp</span>
+            <span class="contact-label">{{ seccionContacto.tarjetaContacto.etiquetas.whatsapp }}</span>
             <a class="button button-whatsapp" [href]="contactWhatsappLink" target="_blank" rel="noopener">
-              Mandar mensaje por WhatsApp
+              {{ seccionContacto.tarjetaContacto.botonWhatsapp }}
             </a>
           </div>
         </div>
@@ -198,57 +189,57 @@
 
       <article class="contact-card reveal reveal-delay" id="dejanos-tu-contacto">
         <div class="section-heading left">
-          <p class="eyebrow">Dejanos tu contacto</p>
-          <h2>Registrate y te contactamos para ayudarte con tu pedido.</h2>
+          <p class="eyebrow">{{ seccionContacto.formularioContacto.sobretitulo }}</p>
+          <h2>{{ seccionContacto.formularioContacto.titulo }}</h2>
         </div>
 
         <form class="contact-form" (ngSubmit)="submitContactRequest()">
           <label>
-            <span>Nombre</span>
+            <span>{{ seccionContacto.formularioContacto.campos.etiquetaNombre }}</span>
             <input
               type="text"
               name="contactName"
               [(ngModel)]="contactForm.nombre"
-              placeholder="Tu nombre completo"
+              [placeholder]="seccionContacto.formularioContacto.campos.placeholderNombre"
               required
             />
           </label>
 
           <label>
-            <span>Correo electronico</span>
+            <span>{{ seccionContacto.formularioContacto.campos.etiquetaCorreo }}</span>
             <input
               type="email"
               name="contactEmail"
               [(ngModel)]="contactForm.email"
-              placeholder="correo@ejemplo.com"
+              [placeholder]="seccionContacto.formularioContacto.campos.placeholderCorreo"
               required
             />
           </label>
 
           <label>
-            <span>Telefono</span>
+            <span>{{ seccionContacto.formularioContacto.campos.etiquetaTelefono }}</span>
             <input
               type="tel"
               name="contactPhone"
               [(ngModel)]="contactForm.telefono"
-              placeholder="5512345678"
+              [placeholder]="seccionContacto.formularioContacto.campos.placeholderTelefono"
               required
             />
           </label>
 
           <label>
-            <span>Pregunta opcional</span>
+            <span>{{ seccionContacto.formularioContacto.campos.etiquetaPregunta }}</span>
             <textarea
               name="contactQuestion"
               [(ngModel)]="contactForm.pregunta"
-              placeholder="Cuentanos que necesitas y te responderemos"
+              [placeholder]="seccionContacto.formularioContacto.campos.placeholderPregunta"
               rows="4"
             ></textarea>
           </label>
 
           <label class="checkbox-row">
             <input type="checkbox" name="contactPromotions" [(ngModel)]="contactForm.aceptaPromociones" />
-            <span>Quiero recibir promociones y novedades</span>
+            <span>{{ seccionContacto.formularioContacto.campos.etiquetaPromociones }}</span>
           </label>
 
           <div class="form-actions">
@@ -256,7 +247,7 @@
               class="button button-primary"
               type="submit"
               [disabled]="!isContactFormValid || contactRequestState === 'loading'">
-              {{ contactRequestState === 'loading' ? 'Registrando...' : 'Registrar contacto' }}
+              {{ contactRequestState === 'loading' ? seccionContacto.formularioContacto.botonEnviando : seccionContacto.formularioContacto.botonEnviar }}
             </button>
           </div>
 
@@ -275,8 +266,8 @@
     <section class="section" id="cotizacion">
       <article class="quote-card quote-card-full reveal">
         <div class="section-heading left">
-          <p class="eyebrow">Cotizacion</p>
-          <h2>Calcula un estimado claro para tu evento.</h2>
+          <p class="eyebrow">{{ seccionCotizacion.sobretitulo }}</p>
+          <h2>{{ seccionCotizacion.titulo }}</h2>
         </div>
 
         <form class="quote-form">
@@ -285,7 +276,7 @@
                 <label class="quote-flavor-card">
                   <span class="quote-flavor-category">{{ getCategoryLabel(product.category) }}</span>
                   <strong>{{ product.flavor }}</strong>
-                  <small>{{ product.price | currency:'MXN':'symbol':'1.0-0' }} por pieza</small>
+                  <small>{{ product.price | currency:'MXN':'symbol':'1.0-0' }} {{ seccionProductos.sufijoPrecio }}</small>
                   <input
                     type="number"
                     [name]="'quote-' + product.flavor"
@@ -302,35 +293,35 @@
 
           <div class="quote-actions">
             <button class="button button-secondary" type="button" (click)="clearQuote()">
-              Limpiar cotizacion
+              {{ seccionCotizacion.botonLimpiar }}
             </button>
           </div>
 
           <label class="checkbox-row">
             <input type="checkbox" name="quoteDelivery" [(ngModel)]="quoteDelivery" />
-            <span>Agregar entrega a domicilio</span>
+            <span>{{ seccionCotizacion.etiquetaEntrega }}</span>
           </label>
         </form>
 
         <div class="quote-summary">
           <div>
-            <span>Total de piezas</span>
+            <span>{{ seccionCotizacion.etiquetasResumen.totalPiezas }}</span>
             <strong>{{ totalQuoteQuantity }}</strong>
           </div>
           <div>
-            <span>Saladas</span>
+            <span>{{ seccionCotizacion.etiquetasResumen.saladas }}</span>
             <strong>
               {{ saltySubtotal | currency:'MXN':'symbol':'1.0-0' }}
             </strong>
           </div>
           <div>
-            <span>Dulces</span>
+            <span>{{ seccionCotizacion.etiquetasResumen.dulces }}</span>
             <strong>
               {{ sweetSubtotal | currency:'MXN':'symbol':'1.0-0' }}
             </strong>
           </div>
           <div class="quote-selection">
-            <span>Sabores elegidos</span>
+            <span>{{ seccionCotizacion.etiquetasResumen.saboresElegidos }}</span>
             @if (selectedQuoteProducts.length > 0) {
               <ul>
                 @for (product of selectedQuoteProducts; track product.flavor) {
@@ -341,31 +332,31 @@
                 }
               </ul>
             } @else {
-              <p>Aun no has agregado piezas por sabor.</p>
+              <p>{{ seccionCotizacion.mensajeVacio }}</p>
             }
           </div>
           <div>
-            <span>Subtotal</span>
+            <span>{{ seccionCotizacion.etiquetasResumen.subtotal }}</span>
             <strong>{{ subtotal | currency:'MXN':'symbol':'1.0-0' }}</strong>
           </div>
           <div>
-            <span>Entrega</span>
+            <span>{{ seccionCotizacion.etiquetasResumen.entrega }}</span>
             <strong>{{ deliveryFee | currency:'MXN':'symbol':'1.0-0' }}</strong>
           </div>
           <div class="quote-total">
-            <span>Total estimado</span>
+            <span>{{ seccionCotizacion.etiquetasResumen.totalEstimado }}</span>
             <strong>{{ total | currency:'MXN':'symbol':'1.0-0' }}</strong>
           </div>
           <div class="quote-whatsapp-action">
-            <span>Enviar cotizacion</span>
+            <span>{{ seccionCotizacion.etiquetasResumen.enviarCotizacion }}</span>
             <div class="quote-submit-row">
               <label class="quote-contact-field">
-                <span>Nombre para la cotizacion</span>
+                <span>{{ seccionCotizacion.etiquetasResumen.nombreCotizacion }}</span>
                 <input
                   type="text"
                   name="quoteCustomerName"
                   [(ngModel)]="quoteCustomerName"
-                  placeholder="Opcional"
+                  [placeholder]="seccionCotizacion.etiquetasResumen.placeholderNombreCotizacion"
                 />
               </label>
               <button
@@ -374,7 +365,7 @@
                 [class.button-disabled]="!canSubmitQuoteRequest"
                 [disabled]="!canSubmitQuoteRequest"
                 (click)="submitQuoteRequest()">
-                {{ quoteRequestState === 'loading' ? 'Enviando...' : 'Mandar cotizacion por WhatsApp' }}
+                {{ quoteRequestState === 'loading' ? seccionCotizacion.botonEnviando : seccionCotizacion.botonEnviar }}
               </button>
             </div>
           </div>
@@ -391,21 +382,18 @@
 
         @if (selectedQuoteProducts.length > 0 && !productsLoadedFromApi && !productsLoading) {
           <p class="status-banner status-banner-warning">
-            Activa la cotizacion solo con productos cargados desde la API. Revisa la conexion e intenta nuevamente.
+            {{ seccionCotizacion.advertenciaSoloApi }}
           </p>
         }
 
-        <p class="quote-note">
-          El calculo es informativo y no reemplaza una cotizacion final. Captura cuantas piezas quieres de cada
-          sabor y el estimado separa automaticamente saladas, dulces y entrega para que todo se entienda rapido.
-        </p>
+        <p class="quote-note">{{ seccionCotizacion.nota }}</p>
       </article>
     </section>
   </main>
 
-  <nav class="mobile-hud" aria-label="Atajos moviles">
-    <a href="#productos">Sabores</a>
-    <a href="#cotizacion">Cotiza</a>
-    <a href="#dejanos-tu-contacto">Contacto</a>
+  <nav class="mobile-hud" [attr.aria-label]="navegacion.ariaAtajosMoviles">
+    @for (enlace of navegacion.enlacesMoviles; track enlace.ancla) {
+      <a [href]="enlace.ancla">{{ enlace.etiqueta }}</a>
+    }
   </nav>
 </div>

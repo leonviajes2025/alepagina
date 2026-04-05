@@ -23,7 +23,7 @@ export const siteConfig = {
     {
       flavor: 'Esquite',
       category: 'salada',
-      description: 'Mezcla cremosa inspirada en elote callejero con toque citrico y chile suave.',
+      description: 'Mezcla cremosa inspirada en elote callejero con toque cítrico y chile suave.',
       image: 'products/queso-chipotle.svg'
     },
     {
@@ -41,13 +41,13 @@ export const siteConfig = {
     {
       flavor: 'Jalapeno cheddar',
       category: 'salada',
-      description: 'Combinacion cremosa y picante pensada para reuniones y botana premium.',
+      description: 'Combinación cremosa y picante pensada para reuniones y botana premium.',
       image: 'products/queso-chipotle.svg'
     },
     {
       flavor: 'Crema y cebolla',
       category: 'salada',
-      description: 'Sabor redondo, aromatico y facil de servir en eventos corporativos o familiares.',
+      description: 'Sabor redondo, aromático y fácil de servir en eventos corporativos o familiares.',
       image: 'products/queso-chipotle.svg'
     },
     {
@@ -59,7 +59,7 @@ export const siteConfig = {
     {
       flavor: 'Caramelo',
       category: 'dulce',
-      description: 'Clasico dorado con acabado crujiente y un sabor amable que gusta a todos.',
+      description: 'Clásico dorado con acabado crujiente y un sabor amable que gusta a todos.',
       image: 'products/caramelo-clasico.svg'
     },
     {
@@ -71,13 +71,13 @@ export const siteConfig = {
     {
       flavor: 'Churro canela',
       category: 'dulce',
-      description: 'Inspirado en churro recien hecho con azucar, canela y aroma tostado.',
+      description: 'Inspirado en churro recién hecho con azúcar, canela y aroma tostado.',
       image: 'products/caramelo-clasico.svg'
     },
     {
       flavor: 'Cajeta con nuez',
       category: 'dulce',
-      description: 'Perfil suave y goloso con notas lacteas y un final de nuez tostada.',
+      description: 'Perfil suave y goloso con notas lácteas y un final de nuez tostada.',
       image: 'products/caramelo-clasico.svg'
     },
     {
