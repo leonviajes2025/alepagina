@@ -205,6 +205,11 @@ export class AppComponent implements OnInit {
     return this.buildWhatsappLink(this.seccionContacto.mensajeWhatsapp);
   }
 
+  openContactWhatsapp(event: Event): void {
+    event.preventDefault();
+    this.openWhatsappMessage(this.seccionContacto.mensajeWhatsapp);
+  }
+
   get quoteRequestText(): string {
     const selectedFlavors = this.selectedQuoteProducts.length > 0
       ? this.selectedQuoteProducts.map((product) => this.buildQuoteProductLine(product)).join('\n')
@@ -311,7 +316,7 @@ export class AppComponent implements OnInit {
         next: () => {
           this.quoteRequestState = 'success';
           this.quoteRequestMessage = this.seccionCotizacion.mensajeExito;
-          window.open(this.buildWhatsappLink(this.quoteRequestText), '_blank', 'noopener');
+          this.openWhatsappMessage(this.quoteRequestText);
         },
         error: () => {
           this.quoteRequestState = 'error';
@@ -421,6 +426,30 @@ export class AppComponent implements OnInit {
       aceptaPromociones: this.contactForm.aceptaPromociones,
       ...(question ? { pregunta: question } : {})
     };
+  }
+
+  private openWhatsappMessage(message: string): void {
+    const appLink = this.buildWhatsappAppLink(message);
+    const webLink = this.buildWhatsappLink(message);
+    const popup = window.open(appLink, '_blank');
+
+    if (!popup) {
+      window.open(webLink, '_blank', 'noopener');
+      return;
+    }
+
+    window.setTimeout(() => {
+      if (document.hidden) {
+        return;
+      }
+
+      popup.close();
+      window.open(webLink, '_blank', 'noopener');
+    }, 900);
+  }
+
+  private buildWhatsappAppLink(message: string): string {
+    return `whatsapp://send?phone=${this.contact.whatsappNumber}&text=${encodeURIComponent(message)}`;
   }
 
   private buildWhatsappLink(message: string): string {

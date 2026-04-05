@@ -54,7 +54,7 @@
             <strong>{{ seccionHero.accesosRapidos.cotizacion.titulo }}</strong>
             <span>{{ seccionHero.accesosRapidos.cotizacion.descripcion }}</span>
           </a>
-          <a class="quick-action-card" [href]="contactWhatsappLink" target="_blank" rel="noopener">
+          <a class="quick-action-card" [href]="contactWhatsappLink" target="_blank" rel="noopener" (click)="openContactWhatsapp($event)">
             <strong>{{ seccionHero.accesosRapidos.whatsapp.titulo }}</strong>
             <span>{{ seccionHero.accesosRapidos.whatsapp.prefijoDescripcion }}{{ contact.person }}</span>
           </a>
@@ -180,7 +180,7 @@
           </div>
           <div>
             <span class="contact-label">{{ seccionContacto.tarjetaContacto.etiquetas.whatsapp }}</span>
-            <a class="button button-whatsapp" [href]="contactWhatsappLink" target="_blank" rel="noopener">
+            <a class="button button-whatsapp" [href]="contactWhatsappLink" target="_blank" rel="noopener" (click)="openContactWhatsapp($event)">
               {{ seccionContacto.tarjetaContacto.botonWhatsapp }}
             </a>
           </div>
