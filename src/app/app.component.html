@@ -280,54 +280,22 @@
         </div>
 
         <form class="quote-form">
-          <div class="quote-group-grid">
-            <section class="quote-group-card">
-              <div class="quote-group-heading">
-                <span class="quote-group-label">Saladas</span>
-                <strong>{{ saltyPrice | currency:'MXN':'symbol':'1.0-0' }} por pieza</strong>
-              </div>
-
-              <div class="quote-flavor-grid">
-                @for (product of saltyQuoteProducts; track product.flavor) {
-                  <label class="quote-flavor-card">
-                    <strong>{{ product.flavor }}</strong>
-                    <small>{{ product.price | currency:'MXN':'symbol':'1.0-0' }} por pieza</small>
-                    <input
-                      type="number"
-                      [name]="'quote-' + product.flavor"
-                      min="0"
-                      step="1"
-                      [(ngModel)]="product.quantity"
-                      (blur)="normalizeQuantity(product)"
-                    />
-                  </label>
-                }
-              </div>
-            </section>
-
-            <section class="quote-group-card">
-              <div class="quote-group-heading">
-                <span class="quote-group-label">Dulces</span>
-                <strong>{{ sweetPrice | currency:'MXN':'symbol':'1.0-0' }} por pieza</strong>
-              </div>
-
-              <div class="quote-flavor-grid">
-                @for (product of sweetQuoteProducts; track product.flavor) {
-                  <label class="quote-flavor-card">
-                    <strong>{{ product.flavor }}</strong>
-                    <small>{{ product.price | currency:'MXN':'symbol':'1.0-0' }} por pieza</small>
-                    <input
-                      type="number"
-                      [name]="'quote-' + product.flavor"
-                      min="0"
-                      step="1"
-                      [(ngModel)]="product.quantity"
-                      (blur)="normalizeQuantity(product)"
-                    />
-                  </label>
-                }
-              </div>
-            </section>
+            <div class="quote-flavor-grid">
+              @for (product of quoteProducts; track product.flavor) {
+                <label class="quote-flavor-card">
+                  <span class="quote-flavor-category">{{ getCategoryLabel(product.category) }}</span>
+                  <strong>{{ product.flavor }}</strong>
+                  <small>{{ product.price | currency:'MXN':'symbol':'1.0-0' }} por pieza</small>
+                  <input
+                    type="number"
+                    [name]="'quote-' + product.flavor"
+                    min="0"
+                    step="1"
+                    [(ngModel)]="product.quantity"
+                    (blur)="normalizeQuantity(product)"
+                  />
+                </label>
+              }
           </div>
 
           <div class="quote-actions">

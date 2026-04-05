@@ -743,15 +743,30 @@ main {
 
 .quote-flavor-grid {
 	display: grid;
-	grid-template-columns: 1fr;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 0.9rem;
 }
 
 .quote-flavor-card {
+	display: grid;
+	align-content: start;
 	padding: 1rem;
 	border-radius: 1.15rem;
 	background: rgba(255, 255, 255, 0.68);
 	border: 1px solid rgba(97, 45, 16, 0.08);
+}
+
+.quote-flavor-category {
+	display: inline-flex;
+	width: fit-content;
+	padding: 0.35rem 0.7rem;
+	border-radius: 999px;
+	background: rgba(255, 233, 208, 0.8);
+	color: var(--caramel-700);
+	font-size: 0.72rem;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
 }
 
 .quote-flavor-card strong,
