@@ -5,6 +5,21 @@ import { AppComponent } from './app.component';
 import { contenidoHero } from './content/hero.content';
 import { siteConfig } from './site.config';
 
+function toIsoDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+function addDays(baseDate: Date, days: number): Date {
+  const nextDate = new Date(baseDate);
+  nextDate.setDate(nextDate.getDate() + days);
+
+  return nextDate;
+}
+
 describe('AppComponent', () => {
   let httpTestingController: HttpTestingController;
 
@@ -139,14 +154,28 @@ describe('AppComponent', () => {
     expect(decodedMessage).toContain(`Total estimado: $${app.total}`);
   });
 
+  it('should use singular and plural piece labels correctly in the WhatsApp text', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    app.quoteProducts[0].quantity = 1;
+    app.quoteProducts[1].quantity = 2;
+
+    expect(app.quoteRequestText).toContain('Sabores solicitados:');
+    expect(app.quoteRequestText).toContain(`- ${app.quoteProducts[0].flavor}: 1 pieza`);
+    expect(app.quoteRequestText).toContain(`- ${app.quoteProducts[1].flavor}: 2 piezas`);
+  });
+
   it('should include the optional name in the quote message when provided', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
 
     app.quoteCustomerName = 'Ana Perez';
+    app.quoteDeliveryDate = '2026-04-20';
     app.quoteProducts[0].quantity = 2;
 
     expect(app.quoteRequestText).toContain('Nombre: Ana Perez');
+    expect(app.quoteRequestText).toContain('Fecha de entrega: 20 de abril de 2026');
   });
 
   it('should group quote products by salty and sweet categories', () => {
@@ -165,11 +194,13 @@ describe('AppComponent', () => {
     app.quoteProducts[0].quantity = 4;
     app.quoteProducts[6].quantity = 7;
     app.quoteDelivery = true;
+    app.quoteDeliveryDate = '2026-04-20';
 
     app.clearQuote();
 
     expect(app.quoteProducts.every((product) => product.quantity === null)).toBeTrue();
     expect(app.quoteDelivery).toBeFalse();
+    expect(app.quoteDeliveryDate).toBe('');
     expect(app.totalQuoteQuantity).toBe(0);
     expect(app.total).toBe(0);
   });
@@ -260,13 +291,18 @@ describe('AppComponent', () => {
     flushProductsRequest();
 
     app.quoteCustomerName = 'Ana Perez';
+    app.quoteDeliveryDate = '2026-04-20';
     app.quoteProducts[0].quantity = 3;
     app.submitQuoteRequest();
 
-      const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/contactos-whats`);
+    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/contactos-whats`);
     expect(request.request.method).toBe('POST');
     expect(request.request.body.nombre).toBe('Ana Perez');
+    expect(request.request.body.fechaEntregaEstimada).toBe('2026-04-20');
+    expect(request.request.body.cotizacion).toContain('Sabores solicitados:');
+    expect(request.request.body.cotizacion).toContain('- Esquite: 3 piezas');
     expect(request.request.body.cotizacion).toContain('Total de piezas: 3');
+    expect(request.request.body.cotizacion).toContain('Fecha de entrega: 20 de abril de 2026');
 
     request.flush({ id: 77 });
 
@@ -307,6 +343,7 @@ describe('AppComponent', () => {
     flushProductsRequest();
 
     app.quoteCustomerName = '   ';
+    app.quoteDeliveryDate = '2026-04-20';
     app.quoteProducts[0].quantity = 1;
     app.submitQuoteRequest();
 
@@ -317,6 +354,52 @@ describe('AppComponent', () => {
 
     const detailRequest = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/cotizacion-detalle`);
     detailRequest.flush({ ok: true });
+  });
+
+  it('should submit the quote when the delivery date is missing', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    fixture.detectChanges();
+    flushProductsRequest();
+
+    app.quoteProducts[0].quantity = 2;
+    app.quoteDeliveryDate = '';
+
+    expect(app.isQuoteDeliveryDateValid).toBeTrue();
+    expect(app.canSubmitQuoteRequest).toBeTrue();
+
+    app.submitQuoteRequest();
+
+    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/contactos-whats`);
+    expect(request.request.body.fechaEntregaEstimada).toBeUndefined();
+    expect(request.request.body.cotizacion).not.toContain('Fecha de entrega:');
+
+    request.flush({ id: 92 });
+
+    const detailRequest = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/cotizacion-detalle`);
+    detailRequest.flush({ ok: true });
+  });
+
+  it('should treat invalid quote delivery dates as invalid', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    app.quoteDeliveryDate = 'fecha-invalida';
+
+    expect(app.isQuoteDeliveryDateValid).toBeFalse();
+  });
+
+  it('should treat past quote delivery dates as invalid and show a warning', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    const yesterday = toIsoDate(addDays(new Date(), -1));
+
+    app.quoteDeliveryDate = yesterday;
+
+    expect(app.isQuoteDeliveryDateInPast).toBeTrue();
+    expect(app.isQuoteDeliveryDateValid).toBeFalse();
+    expect(app.quoteDeliveryDateWarningMessage).toBe('La fecha de entrega no puede ser anterior a hoy.');
   });
 
   it('should send the contact form to the contactos endpoint', () => {
@@ -387,5 +470,48 @@ describe('AppComponent', () => {
 
     expect(questionField).not.toBeNull();
     expect(questionField?.hasAttribute('required')).toBeFalse();
+  });
+
+  it('should render the quote delivery date field next to the quote name field', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    fixture.detectChanges();
+    flushProductsRequest();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const quoteFieldGroup = compiled.querySelector('.quote-contact-fields');
+    const nameField = compiled.querySelector('input[name="quoteCustomerName"]');
+    const dateField = compiled.querySelector('input[name="quoteDeliveryDate"]');
+
+    expect(quoteFieldGroup).not.toBeNull();
+    expect(nameField).not.toBeNull();
+    expect(dateField).not.toBeNull();
+    expect(dateField?.getAttribute('type')).toBe('date');
+    expect(dateField?.hasAttribute('required')).toBeFalse();
+    expect(nameField?.getAttribute('placeholder')).toBe('Tu nombre');
+    expect(dateField?.getAttribute('min')).toBe(app.minQuoteDeliveryDate);
+    expect(compiled.textContent).toContain('Nombre (opcional)');
+    expect(compiled.textContent).toContain('Fecha de entrega (opcional)');
+  });
+
+  it('should render a warning when the quote delivery date is earlier than today', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    const yesterday = toIsoDate(addDays(new Date(), -1));
+
+    fixture.detectChanges();
+    flushProductsRequest();
+
+    app.quoteDeliveryDate = yesterday;
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const warning = compiled.querySelector('#quote-delivery-date-warning');
+    const dateField = compiled.querySelector('input[name="quoteDeliveryDate"]');
+
+    expect(warning?.textContent).toContain('La fecha de entrega no puede ser anterior a hoy.');
+    expect(dateField?.getAttribute('aria-invalid')).toBe('true');
   });
 });

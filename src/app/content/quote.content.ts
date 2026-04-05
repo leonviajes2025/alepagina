@@ -12,8 +12,11 @@ export const contenidoSeccionCotizacion = {
     entrega: 'Entrega',
     totalEstimado: 'Total estimado',
     enviarCotizacion: 'Enviar cotización',
-    nombreCotizacion: 'Nombre para la cotización',
-    placeholderNombreCotizacion: 'Opcional'
+    nombreCotizacion: 'Nombre (opcional)',
+    placeholderNombreCotizacion: 'Tu nombre',
+    fechaCotizacion: 'Fecha de entrega (opcional)',
+    placeholderFechaCotizacion: 'Selecciona una fecha',
+    advertenciaFechaCotizacion: 'La fecha de entrega no puede ser anterior a hoy.'
   },
   mensajeVacio: 'Aún no has agregado piezas por sabor.',
   botonEnviar: 'Mandar cotización por WhatsApp',
@@ -23,6 +26,7 @@ export const contenidoSeccionCotizacion = {
   mensajeSolicitud: {
     introduccion: 'Hola, me interesa una cotización de palomitas gourmet para mi evento.',
     etiquetaNombre: 'Nombre',
+    etiquetaFechaEntregaEstimada: 'Fecha de entrega',
     etiquetaSabores: 'Sabores solicitados:',
     mensajeSinSabores: 'Sin sabores seleccionados todavía.',
     etiquetaTotalPiezas: 'Total de piezas',

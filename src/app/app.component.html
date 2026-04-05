@@ -350,15 +350,34 @@
           <div class="quote-whatsapp-action">
             <span>{{ seccionCotizacion.etiquetasResumen.enviarCotizacion }}</span>
             <div class="quote-submit-row">
-              <label class="quote-contact-field">
-                <span>{{ seccionCotizacion.etiquetasResumen.nombreCotizacion }}</span>
-                <input
-                  type="text"
-                  name="quoteCustomerName"
-                  [(ngModel)]="quoteCustomerName"
-                  [placeholder]="seccionCotizacion.etiquetasResumen.placeholderNombreCotizacion"
-                />
-              </label>
+              <div class="quote-contact-fields">
+                <label class="quote-contact-field">
+                  <span>{{ seccionCotizacion.etiquetasResumen.nombreCotizacion }}</span>
+                  <input
+                    type="text"
+                    name="quoteCustomerName"
+                    [(ngModel)]="quoteCustomerName"
+                    [placeholder]="seccionCotizacion.etiquetasResumen.placeholderNombreCotizacion"
+                  />
+                </label>
+                <label class="quote-contact-field">
+                  <span>{{ seccionCotizacion.etiquetasResumen.fechaCotizacion }}</span>
+                  <input
+                    type="date"
+                    name="quoteDeliveryDate"
+                    [(ngModel)]="quoteDeliveryDate"
+                    [attr.aria-invalid]="!isQuoteDeliveryDateValid"
+                    [attr.aria-describedby]="quoteDeliveryDateWarningMessage ? 'quote-delivery-date-warning' : null"
+                    [min]="minQuoteDeliveryDate"
+                    [placeholder]="seccionCotizacion.etiquetasResumen.placeholderFechaCotizacion"
+                  />
+                  @if (quoteDeliveryDateWarningMessage) {
+                    <p class="quote-field-warning" id="quote-delivery-date-warning">
+                      {{ quoteDeliveryDateWarningMessage }}
+                    </p>
+                  }
+                </label>
+              </div>
               <button
                 class="button button-whatsapp"
                 type="button"

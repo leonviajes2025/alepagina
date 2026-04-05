@@ -45,6 +45,11 @@ type ContactFormModel = {
 export class AppComponent implements OnInit {
   private readonly api = inject(SiteApiService);
   private readonly blockedQuoteKeys = new Set(['-', '+', 'e', 'E', '.', ',']);
+  private readonly quoteDateFormatter = new Intl.DateTimeFormat('es-MX', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  });
 
   readonly config = siteConfig;
   readonly navegacion = contenidoNavegacion;
@@ -79,6 +84,8 @@ export class AppComponent implements OnInit {
   quoteRequestMessage = '';
 
   quoteCustomerName = '';
+
+  quoteDeliveryDate = '';
 
   contactRequestState: RequestState = 'idle';
 
@@ -159,7 +166,33 @@ export class AppComponent implements OnInit {
   get canSubmitQuoteRequest(): boolean {
     return this.selectedQuoteProducts.length > 0
       && this.quoteRequestState !== 'loading'
+      && this.isQuoteDeliveryDateValid
       && this.productsLoadedFromApi;
+  }
+
+  get isQuoteDeliveryDateValid(): boolean {
+    return this.quoteDeliveryDate.trim().length === 0 || this.resolveQuoteDeliveryDate() !== null;
+  }
+
+  get isQuoteDeliveryDateInPast(): boolean {
+    const normalizedDate = this.quoteDeliveryDate.trim();
+
+    return /^\d{4}-\d{2}-\d{2}$/.test(normalizedDate) && normalizedDate < this.minQuoteDeliveryDate;
+  }
+
+  get minQuoteDeliveryDate(): string {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
+  get quoteDeliveryDateWarningMessage(): string {
+    return this.isQuoteDeliveryDateInPast
+      ? this.seccionCotizacion.etiquetasResumen.advertenciaFechaCotizacion
+      : '';
   }
 
   get isContactFormValid(): boolean {
@@ -174,13 +207,15 @@ export class AppComponent implements OnInit {
 
   get quoteRequestText(): string {
     const selectedFlavors = this.selectedQuoteProducts.length > 0
-      ? this.selectedQuoteProducts.map((product) => `- ${product.flavor}: ${product.quantity} piezas`).join('\n')
+      ? this.selectedQuoteProducts.map((product) => this.buildQuoteProductLine(product)).join('\n')
       : this.seccionCotizacion.mensajeSolicitud.mensajeSinSabores;
 
     const customerName = this.quoteCustomerName.trim();
+    const quoteDeliveryDate = this.resolveQuoteDeliveryDate();
     const quoteDetails = [
       this.seccionCotizacion.mensajeSolicitud.introduccion,
       ...(customerName ? [`${this.seccionCotizacion.mensajeSolicitud.etiquetaNombre}: ${customerName}`] : []),
+      ...(quoteDeliveryDate ? [`${this.seccionCotizacion.mensajeSolicitud.etiquetaFechaEntregaEstimada}: ${this.formatQuoteDeliveryDate(quoteDeliveryDate)}`] : []),
       this.seccionCotizacion.mensajeSolicitud.etiquetaSabores,
       selectedFlavors,
       `${this.seccionCotizacion.mensajeSolicitud.etiquetaTotalPiezas}: ${this.totalQuoteQuantity}`,
@@ -230,6 +265,7 @@ export class AppComponent implements OnInit {
 
     this.quoteDelivery = false;
     this.quoteCustomerName = '';
+    this.quoteDeliveryDate = '';
   }
 
   submitQuoteRequest(): void {
@@ -242,7 +278,8 @@ export class AppComponent implements OnInit {
 
     this.api.submitWhatsappQuote({
       nombre: this.resolveOptionalQuoteName(),
-      cotizacion: this.quoteRequestText
+      cotizacion: this.quoteRequestText,
+      ...(this.resolveQuoteDeliveryDate() ? { fechaEntregaEstimada: this.resolveQuoteDeliveryDate()! } : {})
     })
       .pipe(
         switchMap((response) => {
@@ -332,6 +369,40 @@ export class AppComponent implements OnInit {
     const normalizedName = this.quoteCustomerName.trim();
 
     return normalizedName.length > 0 ? normalizedName : null;
+  }
+
+  private resolveQuoteDeliveryDate(): string | null {
+    const normalizedDate = this.quoteDeliveryDate.trim();
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(normalizedDate)) {
+      return null;
+    }
+
+    const parsedDate = new Date(`${normalizedDate}T00:00:00`);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return null;
+    }
+
+    if (normalizedDate < this.minQuoteDeliveryDate) {
+      return null;
+    }
+
+    return normalizedDate;
+  }
+
+  private formatQuoteDeliveryDate(date: string): string {
+    return this.quoteDateFormatter.format(new Date(`${date}T00:00:00`));
+  }
+
+  private buildQuoteProductLine(product: QuoteProduct): string {
+    const quantity = product.quantity ?? 0;
+
+    return `- ${product.flavor}: ${quantity} ${this.getQuotePieceLabel(quantity)}`;
+  }
+
+  private getQuotePieceLabel(quantity: number): string {
+    return quantity === 1 ? 'pieza' : 'piezas';
   }
 
   private resolveOptionalContactQuestion(): string | undefined {

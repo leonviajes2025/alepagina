@@ -10,6 +10,10 @@
       "value": "http://127.0.0.1:3000"
     },
     {
+      "key": "contactoEmailDuplicado",
+      "value": "marta.duplicado.postman@example.com"
+    },
+    {
       "key": "productoId",
       "value": "1"
     },
@@ -41,7 +45,24 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Marta Soto\",\n  \"email\": \"marta.postman@example.com\",\n  \"telefono\": \"+5215555555510\",\n  \"aceptaPromociones\": true,\n  \"pregunta\": \"\u00bfTienen disponibilidad inmediata?\"\n}"
+              "raw": "{\n  \"nombre\": \"Marta Soto\",\n  \"email\": \"{{contactoEmailDuplicado}}\",\n  \"telefono\": \"+5215555555510\",\n  \"aceptaPromociones\": true,\n  \"pregunta\": \"\u00bfTienen disponibilidad inmediata?\"\n}"
+            },
+            "url": "{{baseUrl}}/api/contactos"
+          }
+        },
+        {
+          "name": "POST contacto con email duplicado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Marta Soto Segunda Alta\",\n  \"email\": \"{{contactoEmailDuplicado}}\",\n  \"telefono\": \"+5215555555511\",\n  \"aceptaPromociones\": false,\n  \"pregunta\": \"Segunda solicitud con el mismo correo\"\n}"
             },
             "url": "{{baseUrl}}/api/contactos"
           }
@@ -158,7 +179,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": null,\n  \"cotizacion\": \"Necesito una cotizacion para 20 piezas del Producto Base\"\n}"
+              "raw": "{\n  \"nombre\": null,\n  \"cotizacion\": \"Necesito una cotizacion para 20 piezas del Producto Base\",\n  \"fechaEntregaEstimada\": \"2026-04-20\"\n}"
             },
             "url": "{{baseUrl}}/api/contactos-whats"
           }

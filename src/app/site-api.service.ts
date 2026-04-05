@@ -37,6 +37,7 @@ export type ContactLeadRequest = {
 export type WhatsappQuoteRequest = {
   nombre: string | null;
   cotizacion: string;
+  fechaEntregaEstimada?: string;
 };
 
 export type WhatsappQuoteResponse = {
