@@ -64,6 +64,27 @@ select {
 	filter: saturate(0.7);
 }
 
+.api-diagnostic-panel {
+	display: grid;
+	gap: 0.75rem;
+	align-items: start;
+}
+
+.api-diagnostic-panel strong,
+.api-diagnostic-panel p,
+.api-diagnostic-panel ul {
+	margin: 0;
+}
+
+.api-diagnostic-panel ul {
+	padding-left: 1.15rem;
+	line-height: 1.55;
+}
+
+.api-diagnostic-action {
+	justify-self: flex-start;
+}
+
 @keyframes fade-up {
 	from {
 		opacity: 0;

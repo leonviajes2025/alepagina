@@ -1,4 +1,5 @@
 import { CurrencyPipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize, forkJoin, of, switchMap, throwError } from 'rxjs';
@@ -27,6 +28,15 @@ type QuoteProduct = Product & {
 };
 
 type RequestState = 'idle' | 'loading' | 'success' | 'error';
+
+type ApiConnectionStatus = 'idle' | 'checking' | 'success' | 'error';
+
+type ApiConnectionDiagnostic = {
+  status: ApiConnectionStatus;
+  title: string;
+  summary: string;
+  details: string[];
+};
 
 type ContactFormModel = {
   nombre: string;
@@ -76,6 +86,13 @@ export class AppComponent implements OnInit {
   productsLoading = false;
 
   productsError = '';
+
+  apiConnectionDiagnostic: ApiConnectionDiagnostic = {
+    status: 'idle',
+    title: 'Diagnóstico de API',
+    summary: '',
+    details: []
+  };
 
   productsLoadedFromApi = false;
 
@@ -205,9 +222,21 @@ export class AppComponent implements OnInit {
     return this.buildWhatsappLink(this.seccionContacto.mensajeWhatsapp);
   }
 
+  get apiBaseUrl(): string {
+    return this.api.apiBaseUrl;
+  }
+
+  get productsEndpoint(): string {
+    return `${this.apiBaseUrl}/productos/activos`;
+  }
+
   openContactWhatsapp(event: Event): void {
     event.preventDefault();
     this.openWhatsappMessage(this.seccionContacto.mensajeWhatsapp);
+  }
+
+  retryApiConnection(): void {
+    this.loadProducts();
   }
 
   get quoteRequestText(): string {
@@ -460,6 +489,15 @@ export class AppComponent implements OnInit {
     this.productsLoading = true;
     this.productsError = '';
     this.productsLoadedFromApi = false;
+    this.apiConnectionDiagnostic = {
+      status: 'checking',
+      title: 'Validando conexión con la API',
+      summary: 'Probando la carga de productos desde el backend configurado.',
+      details: [
+        `Base URL configurada: ${this.apiBaseUrl}`,
+        `Endpoint probado: ${this.productsEndpoint}`
+      ]
+    };
 
     this.api.getProducts()
       .pipe(finalize(() => {
@@ -471,17 +509,137 @@ export class AppComponent implements OnInit {
 
           if (mappedProducts.length === 0) {
             this.productsError = this.seccionProductos.mensajeProductosInvalidos;
+            this.apiConnectionDiagnostic = {
+              status: 'error',
+              title: 'La API respondió, pero con datos no válidos',
+              summary: 'Se recibió una respuesta del backend, pero no se pudieron mapear productos activos.',
+              details: [
+                `Base URL configurada: ${this.apiBaseUrl}`,
+                `Endpoint probado: ${this.productsEndpoint}`,
+                'La petición respondió sin error HTTP, así que el problema parece estar en la estructura del payload o en los campos devueltos.'
+              ]
+            };
             return;
           }
 
           this.products = mappedProducts;
           this.quoteProducts = this.createQuoteProducts(mappedProducts);
           this.productsLoadedFromApi = true;
+          this.apiConnectionDiagnostic = {
+            status: 'success',
+            title: 'Conexión con la API correcta',
+            summary: `La API respondió correctamente y se cargaron ${mappedProducts.length} productos.`,
+            details: [
+              `Base URL configurada: ${this.apiBaseUrl}`,
+              `Endpoint probado: ${this.productsEndpoint}`
+            ]
+          };
         },
-        error: () => {
+        error: (error: unknown) => {
           this.productsError = this.seccionProductos.mensajeProductosNoDisponibles;
+          this.apiConnectionDiagnostic = this.buildApiConnectionDiagnostic(error);
         }
       });
+  }
+
+  private buildApiConnectionDiagnostic(error: unknown): ApiConnectionDiagnostic {
+    const baseDetails = [
+      `Base URL configurada: ${this.apiBaseUrl}`,
+      `Endpoint probado: ${this.productsEndpoint}`
+    ];
+
+    if (!(error instanceof HttpErrorResponse)) {
+      return {
+        status: 'error',
+        title: 'Error desconocido al conectar con la API',
+        summary: 'La aplicación no pudo clasificar el fallo de conexión.',
+        details: [
+          ...baseDetails,
+          `Detalle recibido: ${this.stringifyUnknownError(error)}`
+        ]
+      };
+    }
+
+    if (error.status === 0) {
+      return {
+        status: 'error',
+        title: 'La API no respondió',
+        summary: 'Normalmente esto indica un problema de red, CORS, certificado o una URL inaccesible.',
+        details: [
+          ...baseDetails,
+          'HTTP status: 0',
+          `Estado del navegador: ${navigator.onLine ? 'en línea' : 'sin conexión'}`,
+          'Causas probables: la variable NG_APP_API_BASE_URL apunta a una URL incorrecta, el backend no admite CORS desde tu dominio de Vercel, o el servidor está caído.'
+        ]
+      };
+    }
+
+    if (error.status === 404) {
+      return {
+        status: 'error',
+        title: 'Endpoint no encontrado en la API',
+        summary: 'El backend respondió, pero la ruta probada no existe.',
+        details: [
+          ...baseDetails,
+          'HTTP status: 404',
+          'Verifica que la base URL termine en /api y que exista la ruta /productos/activos.'
+        ]
+      };
+    }
+
+    if (error.status === 401 || error.status === 403) {
+      return {
+        status: 'error',
+        title: 'La API rechazó la solicitud',
+        summary: 'El backend respondió con un error de autorización.',
+        details: [
+          ...baseDetails,
+          `HTTP status: ${error.status}`,
+          'Revisa si el backend requiere autenticación, headers específicos o una lista blanca de origen.'
+        ]
+      };
+    }
+
+    if (error.status >= 500) {
+      return {
+        status: 'error',
+        title: 'El backend falló al procesar la solicitud',
+        summary: 'La conexión existe, pero el servidor respondió con error interno.',
+        details: [
+          ...baseDetails,
+          `HTTP status: ${error.status}`,
+          `Status text: ${error.statusText || 'sin texto de estado'}`
+        ]
+      };
+    }
+
+    return {
+      status: 'error',
+      title: 'La API respondió con error',
+      summary: 'La solicitud llegó al backend, pero fue rechazada o procesada con error.',
+      details: [
+        ...baseDetails,
+        `HTTP status: ${error.status}`,
+        `Status text: ${error.statusText || 'sin texto de estado'}`,
+        `URL final reportada: ${error.url || this.productsEndpoint}`
+      ]
+    };
+  }
+
+  private stringifyUnknownError(error: unknown): string {
+    if (typeof error === 'string') {
+      return error;
+    }
+
+    if (error instanceof Error) {
+      return error.message;
+    }
+
+    try {
+      return JSON.stringify(error);
+    } catch {
+      return 'No fue posible serializar el error.';
+    }
   }
 
   private buildCatalogProducts(products: readonly ProductConfig[]): Product[] {

@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpErrorResponse } from '@angular/common/http';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { AppComponent } from './app.component';
@@ -239,6 +240,45 @@ describe('AppComponent', () => {
     expect(app.products.length).toBe(2);
     expect(app.products[0].flavor).toBe('Esquite');
     expect(app.products[0].price).toBe(32);
+    expect(app.apiConnectionDiagnostic.status).toBe('success');
+    expect(app.apiConnectionDiagnostic.summary).toContain('2 productos');
+  });
+
+  it('should expose a useful diagnostic when the API is unreachable', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    fixture.detectChanges();
+
+    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/activos`);
+    expect(request.request.method).toBe('GET');
+
+    request.error(new ProgressEvent('error'), {
+      status: 0,
+      statusText: 'Unknown Error'
+    });
+
+    expect(app.productsError).toBeTruthy();
+    expect(app.apiConnectionDiagnostic.status).toBe('error');
+    expect(app.apiConnectionDiagnostic.title).toContain('API no respondió');
+    expect(app.apiConnectionDiagnostic.details.some((detail) => detail.includes(siteConfig.apiBaseUrl))).toBeTrue();
+  });
+
+  it('should expose a useful diagnostic when the API returns 404', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    fixture.detectChanges();
+
+    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/activos`);
+    request.flush({}, {
+      status: 404,
+      statusText: 'Not Found'
+    });
+
+    expect(app.apiConnectionDiagnostic.status).toBe('error');
+    expect(app.apiConnectionDiagnostic.title).toContain('Endpoint no encontrado');
+    expect(app.apiConnectionDiagnostic.details.some((detail) => detail.includes('/productos/activos'))).toBeTrue();
   });
 
   it('should support wrapped product responses and alternate field names', () => {

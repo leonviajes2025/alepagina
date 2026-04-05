@@ -57,6 +57,10 @@ export class SiteApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = siteConfig.apiBaseUrl;
 
+  get apiBaseUrl(): string {
+	return this.baseUrl;
+  }
+
   getProducts(): Observable<ApiProductDto[]> {
     return this.http
       .get<ProductsResponse>(`${this.baseUrl}/productos/activos`)

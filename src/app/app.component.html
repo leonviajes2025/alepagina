@@ -125,6 +125,28 @@
         <p class="status-banner status-banner-warning reveal">{{ productsError }}</p>
       }
 
+      @if (apiConnectionDiagnostic.summary) {
+        <article
+          class="status-banner api-diagnostic-panel"
+          [class.status-banner-info]="apiConnectionDiagnostic.status === 'checking'"
+          [class.status-banner-success]="apiConnectionDiagnostic.status === 'success'"
+          [class.status-banner-warning]="apiConnectionDiagnostic.status === 'idle'"
+          [class.status-banner-error]="apiConnectionDiagnostic.status === 'error'">
+          <strong>{{ apiConnectionDiagnostic.title }}</strong>
+          <p>{{ apiConnectionDiagnostic.summary }}</p>
+          <ul>
+            @for (detail of apiConnectionDiagnostic.details; track detail) {
+              <li>{{ detail }}</li>
+            }
+          </ul>
+          @if (apiConnectionDiagnostic.status === 'error') {
+            <button class="button button-secondary api-diagnostic-action" type="button" (click)="retryApiConnection()">
+              Reintentar conexión
+            </button>
+          }
+        </article>
+      }
+
       <div class="product-grid">
         @for (product of products; track product.flavor) {
           <article class="product-card reveal">
