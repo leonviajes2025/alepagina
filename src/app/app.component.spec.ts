@@ -88,6 +88,14 @@ describe('AppComponent', () => {
     expect(app.getCatalogPrice('dulce')).toBe(siteConfig.productPrices.sweet);
   });
 
+  it('should initialize quote quantities as empty', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    expect(app.quoteProducts.every((product) => product.quantity === null)).toBeTrue();
+    expect(app.totalQuoteQuantity).toBe(0);
+  });
+
   it('should calculate the quote subtotal using selected flavors', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
@@ -159,10 +167,34 @@ describe('AppComponent', () => {
 
     app.clearQuote();
 
-    expect(app.quoteProducts.every((product) => product.quantity === 0)).toBeTrue();
+    expect(app.quoteProducts.every((product) => product.quantity === null)).toBeTrue();
     expect(app.quoteDelivery).toBeFalse();
     expect(app.totalQuoteQuantity).toBe(0);
     expect(app.total).toBe(0);
+  });
+
+  it('should normalize negative quote quantities to empty', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    app.quoteProducts[0].quantity = -3;
+
+    app.normalizeQuantity(app.quoteProducts[0]);
+
+    expect(app.quoteProducts[0].quantity).toBeNull();
+    expect(app.totalQuoteQuantity).toBe(0);
+  });
+
+  it('should block invalid keys in quote inputs', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    const preventDefault = jasmine.createSpy('preventDefault');
+
+    app.blockInvalidQuoteKey({ key: '-', preventDefault } as unknown as KeyboardEvent);
+    app.blockInvalidQuoteKey({ key: 'e', preventDefault } as unknown as KeyboardEvent);
+    app.blockInvalidQuoteKey({ key: '5', preventDefault } as unknown as KeyboardEvent);
+
+    expect(preventDefault).toHaveBeenCalledTimes(2);
   });
 
   it('should replace the fallback catalog with products from the API', () => {

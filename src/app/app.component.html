@@ -291,7 +291,9 @@
                     [name]="'quote-' + product.flavor"
                     min="0"
                     step="1"
+                    inputmode="numeric"
                     [(ngModel)]="product.quantity"
+                    (keydown)="blockInvalidQuoteKey($event)"
                     (blur)="normalizeQuantity(product)"
                   />
                 </label>

@@ -15,7 +15,7 @@ type Product = {
 };
 
 type QuoteProduct = Product & {
-  quantity: number;
+  quantity: number | null;
 };
 
 type RequestState = 'idle' | 'loading' | 'success' | 'error';
@@ -49,6 +49,7 @@ type TrustPillar = {
 })
 export class AppComponent implements OnInit {
   private readonly api = inject(SiteApiService);
+  private readonly blockedQuoteKeys = new Set(['-', '+', 'e', 'E', '.', ',']);
 
   readonly config = siteConfig;
 
@@ -150,7 +151,7 @@ export class AppComponent implements OnInit {
   }
 
   get selectedQuoteProducts(): QuoteProduct[] {
-    return this.quoteProducts.filter((product) => product.quantity > 0);
+    return this.quoteProducts.filter((product) => (product.quantity ?? 0) > 0);
   }
 
   get saltyQuoteProducts(): QuoteProduct[] {
@@ -162,7 +163,7 @@ export class AppComponent implements OnInit {
   }
 
   get totalQuoteQuantity(): number {
-    return this.selectedQuoteProducts.reduce((total, product) => total + product.quantity, 0);
+    return this.selectedQuoteProducts.reduce((total, product) => total + (product.quantity ?? 0), 0);
   }
 
   get saltySubtotal(): number {
@@ -243,16 +244,22 @@ export class AppComponent implements OnInit {
   }
 
   getQuoteLineTotal(product: QuoteProduct): number {
-    return product.quantity * product.price;
+    return (product.quantity ?? 0) * product.price;
   }
 
   normalizeQuantity(product: QuoteProduct): void {
     product.quantity = this.normalizeQuoteValue(product.quantity);
   }
 
+  blockInvalidQuoteKey(event: KeyboardEvent): void {
+    if (this.blockedQuoteKeys.has(event.key)) {
+      event.preventDefault();
+    }
+  }
+
   clearQuote(): void {
     for (const product of this.quoteProducts) {
-      product.quantity = 0;
+      product.quantity = null;
     }
 
     this.quoteDelivery = false;
@@ -343,9 +350,13 @@ export class AppComponent implements OnInit {
       });
   }
 
-  private normalizeQuoteValue(value: number): number {
+  private normalizeQuoteValue(value: number | null): number | null {
+    if (value == null) {
+      return null;
+    }
+
     if (!Number.isFinite(value) || value < 0) {
-      return 0;
+      return null;
     }
 
     return Math.round(value);
@@ -417,7 +428,7 @@ export class AppComponent implements OnInit {
   private createQuoteProducts(products: readonly Product[]): QuoteProduct[] {
     return products.map((product) => ({
       ...product,
-      quantity: 0
+      quantity: null
     }));
   }
 
