@@ -294,7 +294,8 @@ describe('AppComponent', () => {
       nombre: 'Marta Soto',
       email: 'marta.postman@example.com',
       telefono: '+5215555555510',
-      aceptaPromociones: true
+      aceptaPromociones: true,
+      pregunta: 'Tienen disponibilidad inmediata?'
     };
 
     app.submitContactRequest();
@@ -305,12 +306,53 @@ describe('AppComponent', () => {
       nombre: 'Marta Soto',
       email: 'marta.postman@example.com',
       telefono: '+5215555555510',
-      aceptaPromociones: true
+      aceptaPromociones: true,
+      pregunta: 'Tienen disponibilidad inmediata?'
     });
 
     request.flush({ ok: true });
 
     expect(app.contactRequestState).toBe('success');
     expect(app.contactForm.nombre).toBe('');
+    expect(app.contactForm.pregunta).toBe('');
+  });
+
+  it('should omit the optional contact question when it is empty', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    app.contactForm = {
+      nombre: 'Marta Soto',
+      email: 'marta.postman@example.com',
+      telefono: '+5215555555510',
+      aceptaPromociones: false,
+      pregunta: '   '
+    };
+
+    app.submitContactRequest();
+
+    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/contactos`);
+    expect(request.request.body).toEqual({
+      nombre: 'Marta Soto',
+      email: 'marta.postman@example.com',
+      telefono: '+5215555555510',
+      aceptaPromociones: false
+    });
+
+    request.flush({ ok: true });
+  });
+
+  it('should render the optional question field in the contact form', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+
+    fixture.detectChanges();
+    flushProductsRequest();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const questionField = compiled.querySelector('textarea[name="contactQuestion"]');
+
+    expect(questionField).not.toBeNull();
+    expect(questionField?.hasAttribute('required')).toBeFalse();
   });
 });

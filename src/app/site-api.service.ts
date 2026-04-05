@@ -31,6 +31,7 @@ export type ContactLeadRequest = {
   email: string;
   telefono: string;
   aceptaPromociones: boolean;
+  pregunta?: string;
 };
 
 export type WhatsappQuoteRequest = {

@@ -41,7 +41,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Marta Soto\",\n  \"email\": \"marta.postman@example.com\",\n  \"telefono\": \"+5215555555510\",\n  \"aceptaPromociones\": true\n}"
+              "raw": "{\n  \"nombre\": \"Marta Soto\",\n  \"email\": \"marta.postman@example.com\",\n  \"telefono\": \"+5215555555510\",\n  \"aceptaPromociones\": true,\n  \"pregunta\": \"\u00bfTienen disponibilidad inmediata?\"\n}"
             },
             "url": "{{baseUrl}}/api/contactos"
           }

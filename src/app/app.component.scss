@@ -639,6 +639,7 @@ main {
 }
 
 .contact-form input,
+.contact-form textarea,
 .quote-form input[type='text'],
 .quote-form input[type='number'] {
 	width: 100%;
@@ -649,6 +650,11 @@ main {
 	font: inherit;
 	color: var(--ink-900);
 	background: #fffdfa;
+}
+
+.contact-form textarea {
+	min-height: 7.5rem;
+	resize: vertical;
 }
 
 .form-actions {

@@ -2,7 +2,7 @@ import { CurrencyPipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize, forkJoin, of, switchMap, throwError } from 'rxjs';
-import { SiteApiService, type ApiProductDto, type QuoteDetailRequest } from './site-api.service';
+import { SiteApiService, type ApiProductDto, type ContactLeadRequest, type QuoteDetailRequest } from './site-api.service';
 import { siteConfig, type ProductCategory, type ProductConfig } from './site.config';
 
 type Product = {
@@ -25,6 +25,7 @@ type ContactFormModel = {
   email: string;
   telefono: string;
   aceptaPromociones: boolean;
+  pregunta: string;
 };
 
 type Service = {
@@ -83,7 +84,8 @@ export class AppComponent implements OnInit {
     nombre: '',
     email: '',
     telefono: '',
-    aceptaPromociones: false
+    aceptaPromociones: false,
+    pregunta: ''
   };
 
   readonly trustPillars: TrustPillar[] = [
@@ -316,12 +318,7 @@ export class AppComponent implements OnInit {
     this.contactRequestState = 'loading';
     this.contactRequestMessage = '';
 
-    this.api.createContact({
-      nombre: this.contactForm.nombre.trim(),
-      email: this.contactForm.email.trim(),
-      telefono: this.contactForm.telefono.trim(),
-      aceptaPromociones: this.contactForm.aceptaPromociones
-    })
+    this.api.createContact(this.buildContactPayload())
       .pipe(finalize(() => {
         if (this.contactRequestState === 'loading') {
           this.contactRequestState = 'idle';
@@ -335,7 +332,8 @@ export class AppComponent implements OnInit {
             nombre: '',
             email: '',
             telefono: '',
-            aceptaPromociones: false
+            aceptaPromociones: false,
+            pregunta: ''
           };
         },
         error: () => {
@@ -357,6 +355,24 @@ export class AppComponent implements OnInit {
     const normalizedName = this.quoteCustomerName.trim();
 
     return normalizedName.length > 0 ? normalizedName : null;
+  }
+
+  private resolveOptionalContactQuestion(): string | undefined {
+    const normalizedQuestion = this.contactForm.pregunta.trim();
+
+    return normalizedQuestion.length > 0 ? normalizedQuestion : undefined;
+  }
+
+  private buildContactPayload(): ContactLeadRequest {
+    const question = this.resolveOptionalContactQuestion();
+
+    return {
+      nombre: this.contactForm.nombre.trim(),
+      email: this.contactForm.email.trim(),
+      telefono: this.contactForm.telefono.trim(),
+      aceptaPromociones: this.contactForm.aceptaPromociones,
+      ...(question ? { pregunta: question } : {})
+    };
   }
 
   private buildWhatsappLink(message: string): string {

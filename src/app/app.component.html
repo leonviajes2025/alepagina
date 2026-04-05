@@ -236,6 +236,16 @@
             />
           </label>
 
+          <label>
+            <span>Pregunta opcional</span>
+            <textarea
+              name="contactQuestion"
+              [(ngModel)]="contactForm.pregunta"
+              placeholder="Cuentanos que necesitas y te responderemos"
+              rows="4"
+            ></textarea>
+          </label>
+
           <label class="checkbox-row">
             <input type="checkbox" name="contactPromotions" [(ngModel)]="contactForm.aceptaPromociones" />
             <span>Quiero recibir promociones y novedades</span>
