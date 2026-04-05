@@ -48,7 +48,9 @@ The project is ready to deploy as a static Angular application on Vercel.
 ### API configuration
 
 - In development, the app uses the proxy in `proxy.conf.json` and sends requests to `/api`.
-- In production, the app uses `https://back-2-hazel.vercel.app/api` from `src/environments/environment.ts`, so no extra proxy is required in Vercel.
+- In production, `npm run build` generates `src/environments/environment.production.ts` from the `NG_APP_API_BASE_URL` variable.
+- If `NG_APP_API_BASE_URL` is not defined, the build falls back to `https://back-2-hazel.vercel.app/api`.
+- In Vercel, add `NG_APP_API_BASE_URL` with the full public API base URL, for example `https://back-2-hazel.vercel.app/api`.
 
 ## Running unit tests
 
