@@ -246,11 +246,6 @@ main {
 	transform: translateY(-2px);
 }
 
-.button:disabled {
-	cursor: not-allowed;
-	transform: none;
-}
-
 .button-primary {
 	background: linear-gradient(135deg, var(--caramel-600), var(--berry-500));
 	color: #fff9f5;
@@ -268,12 +263,6 @@ main {
 	border-color: #157a4a;
 	color: #f3fff8;
 	box-shadow: 0 1.1rem 2rem rgba(21, 122, 74, 0.18);
-}
-
-.button-disabled {
-	pointer-events: none;
-	opacity: 0.55;
-	filter: saturate(0.7);
 }
 
 .hero-points {
@@ -952,36 +941,6 @@ main {
 	text-decoration: none;
 	font-size: 0.92rem;
 	font-weight: 800;
-}
-
-.reveal {
-	animation: fade-up 700ms ease both;
-}
-
-.reveal-delay {
-	animation-delay: 140ms;
-}
-
-@keyframes fade-up {
-	from {
-		opacity: 0;
-		transform: translateY(18px);
-	}
-
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-@keyframes spin {
-	from {
-		transform: rotate(0deg);
-	}
-
-	to {
-		transform: rotate(360deg);
-	}
 }
 
 @media (max-width: 980px) {

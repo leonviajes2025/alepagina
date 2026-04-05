@@ -44,3 +44,44 @@ textarea,
 select {
 	font: inherit;
 }
+
+.reveal {
+	animation: fade-up 700ms ease both;
+}
+
+.reveal-delay {
+	animation-delay: 140ms;
+}
+
+.button:disabled {
+	cursor: not-allowed;
+	transform: none;
+}
+
+.button-disabled {
+	pointer-events: none;
+	opacity: 0.55;
+	filter: saturate(0.7);
+}
+
+@keyframes fade-up {
+	from {
+		opacity: 0;
+		transform: translateY(18px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
+}
