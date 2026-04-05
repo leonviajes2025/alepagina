@@ -233,8 +233,11 @@ main {
 	justify-content: center;
 	min-height: 3.3rem;
 	padding: 0.9rem 1.35rem;
+	border: 1px solid transparent;
 	border-radius: 999px;
+	cursor: pointer;
 	text-decoration: none;
+	font: inherit;
 	font-weight: 800;
 	transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
 }
@@ -262,7 +265,9 @@ main {
 
 .button-whatsapp {
 	background: #1f9d63;
+	border-color: #157a4a;
 	color: #f3fff8;
+	box-shadow: 0 1.1rem 2rem rgba(21, 122, 74, 0.18);
 }
 
 .button-disabled {
@@ -612,6 +617,10 @@ main {
 	color: var(--caramel-700);
 	font-weight: 800;
 	text-decoration: none;
+}
+
+.contact-list .button-whatsapp {
+	color: #f3fff8;
 }
 
 .contact-form,
