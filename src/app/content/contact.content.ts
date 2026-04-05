@@ -26,7 +26,7 @@ export const contenidoSeccionContacto = {
     },
     botonEnviar: 'Registrar contacto',
     botonEnviando: 'Registrando...',
-    mensajeExito: 'Gracias. Tus datos fueron registrados correctamente.',
+    mensajeExito: 'Gracias. Tus datos fueron registrados correctamente. ',
     mensajeError: 'No se pudo registrar tu contacto. Intenta nuevamente.'
   }
-} as const;
+} as const; 
