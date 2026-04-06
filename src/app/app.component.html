@@ -121,10 +121,7 @@
       <div class="section-heading reveal">
         <p class="eyebrow">{{ seccionProductos.sobretitulo }}</p>
         <h2>{{ seccionProductos.titulo }}</h2>
-        <p>
-          {{ seccionProductos.prefijoConfiguracion }} {{ saltyPrice | currency:'MXN':'symbol':'1.0-0' }} {{ seccionProductos.conectorConfiguracion }}
-          {{ sweetPrice | currency:'MXN':'symbol':'1.0-0' }} {{ seccionProductos.sufijoConfiguracion }}
-        </p>
+        <p>{{ seccionProductos.descripcionPrecios }}</p>
       </div>
 
       @if (productsLoading) {
@@ -165,7 +162,7 @@
               <span class="product-category">{{ getCategoryLabel(product.category) }}</span>
               <h3>{{ product.flavor }}</h3>
               <p>{{ product.description }}</p>
-              <strong>{{ product.price | currency:'MXN':'symbol':'1.0-0' }} <span>{{ seccionProductos.sufijoPrecio }}</span></strong>
+              <strong>{{ formatPrice(product.price) }} <span>{{ seccionProductos.sufijoPrecio }}</span></strong>
             </div>
           </article>
         }
@@ -308,7 +305,7 @@
                 <label class="quote-flavor-card">
                   <span class="quote-flavor-category">{{ getCategoryLabel(product.category) }}</span>
                   <strong>{{ product.flavor }}</strong>
-                  <small>{{ product.price | currency:'MXN':'symbol':'1.0-0' }} {{ seccionProductos.sufijoPrecio }}</small>
+                  <small>{{ formatPrice(product.price) }} {{ seccionProductos.sufijoPrecio }}</small>
                   <input
                     type="number"
                     [name]="'quote-' + product.flavor"
@@ -343,13 +340,19 @@
           <div>
             <span>{{ seccionCotizacion.etiquetasResumen.saladas }}</span>
             <strong>
-              {{ saltySubtotal | currency:'MXN':'symbol':'1.0-0' }}
+              {{ formatPrice(saltySubtotal) }}
             </strong>
           </div>
           <div>
             <span>{{ seccionCotizacion.etiquetasResumen.dulces }}</span>
             <strong>
-              {{ sweetSubtotal | currency:'MXN':'symbol':'1.0-0' }}
+              {{ formatPrice(sweetSubtotal) }}
+            </strong>
+          </div>
+          <div>
+            <span>{{ seccionCotizacion.etiquetasResumen.mixtas }}</span>
+            <strong>
+              {{ formatPrice(mixedSubtotal) }}
             </strong>
           </div>
           <div class="quote-selection">
@@ -359,7 +362,7 @@
                 @for (product of selectedQuoteProducts; track product.flavor) {
                   <li>
                     {{ product.flavor }}: {{ product.quantity }} piezas =
-                    {{ getQuoteLineTotal(product) | currency:'MXN':'symbol':'1.0-0' }}
+                    {{ formatPrice(getQuoteLineTotal(product)) }}
                   </li>
                 }
               </ul>
@@ -369,15 +372,15 @@
           </div>
           <div>
             <span>{{ seccionCotizacion.etiquetasResumen.subtotal }}</span>
-            <strong>{{ subtotal | currency:'MXN':'symbol':'1.0-0' }}</strong>
+            <strong>{{ formatPrice(subtotal) }}</strong>
           </div>
           <div>
             <span>{{ seccionCotizacion.etiquetasResumen.entrega }}</span>
-            <strong>{{ deliveryFee | currency:'MXN':'symbol':'1.0-0' }}</strong>
+            <strong>{{ formatPrice(deliveryFee) }}</strong>
           </div>
           <div class="quote-total">
             <span>{{ seccionCotizacion.etiquetasResumen.totalEstimado }}</span>
-            <strong>{{ total | currency:'MXN':'symbol':'1.0-0' }}</strong>
+            <strong>{{ formatPrice(total) }}</strong>
           </div>
           <div class="quote-whatsapp-action">
             <span>{{ seccionCotizacion.etiquetasResumen.enviarCotizacion }}</span>

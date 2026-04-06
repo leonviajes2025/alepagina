@@ -1,4 +1,4 @@
-import { CurrencyPipe, DOCUMENT } from '@angular/common';
+import { DOCUMENT } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -48,7 +48,7 @@ type ContactFormModel = {
 
 @Component({
   selector: 'app-root',
-  imports: [CurrencyPipe, FormsModule],
+  imports: [FormsModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -60,6 +60,10 @@ export class AppComponent implements OnInit {
     day: '2-digit',
     month: 'long',
     year: 'numeric'
+  });
+  private readonly priceFormatter = new Intl.NumberFormat('es-MX', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
   });
 
   readonly config = siteConfig;
@@ -152,14 +156,6 @@ export class AppComponent implements OnInit {
     return this.products[6] ?? this.products[0];
   }
 
-  get saltyPrice(): number {
-    return this.config.productPrices.salty;
-  }
-
-  get sweetPrice(): number {
-    return this.config.productPrices.sweet;
-  }
-
   get selectedQuoteProducts(): QuoteProduct[] {
     return this.quoteProducts.filter((product) => (product.quantity ?? 0) > 0);
   }
@@ -170,6 +166,10 @@ export class AppComponent implements OnInit {
 
   get sweetQuoteProducts(): QuoteProduct[] {
     return this.quoteProducts.filter((product) => product.category === 'dulce');
+  }
+
+  get mixedQuoteProducts(): QuoteProduct[] {
+    return this.quoteProducts.filter((product) => product.category === 'dulce/salada');
   }
 
   get totalQuoteQuantity(): number {
@@ -188,8 +188,14 @@ export class AppComponent implements OnInit {
       .reduce((total, product) => total + this.getQuoteLineTotal(product), 0);
   }
 
+  get mixedSubtotal(): number {
+    return this.selectedQuoteProducts
+      .filter((product) => product.category === 'dulce/salada')
+      .reduce((total, product) => total + this.getQuoteLineTotal(product), 0);
+  }
+
   get subtotal(): number {
-    return this.saltySubtotal + this.sweetSubtotal;
+    return this.saltySubtotal + this.sweetSubtotal + this.mixedSubtotal;
   }
 
   get deliveryFee(): number {
@@ -277,10 +283,11 @@ export class AppComponent implements OnInit {
       this.seccionCotizacion.mensajeSolicitud.etiquetaSabores,
       selectedFlavors,
       `${this.seccionCotizacion.mensajeSolicitud.etiquetaTotalPiezas}: ${this.totalQuoteQuantity}`,
-      `${this.seccionCotizacion.mensajeSolicitud.etiquetaSubtotalSaladas}: $${this.saltySubtotal}`,
-      `${this.seccionCotizacion.mensajeSolicitud.etiquetaSubtotalDulces}: $${this.sweetSubtotal}`,
+      `${this.seccionCotizacion.mensajeSolicitud.etiquetaSubtotalSaladas}: ${this.formatPrice(this.saltySubtotal)}`,
+      `${this.seccionCotizacion.mensajeSolicitud.etiquetaSubtotalDulces}: ${this.formatPrice(this.sweetSubtotal)}`,
+      `${this.seccionCotizacion.mensajeSolicitud.etiquetaSubtotalMixtas}: ${this.formatPrice(this.mixedSubtotal)}`,
       `${this.seccionCotizacion.mensajeSolicitud.etiquetaEntrega}: ${this.quoteDelivery ? this.seccionCotizacion.mensajeSolicitud.etiquetaEntregaSi : this.seccionCotizacion.mensajeSolicitud.etiquetaEntregaNo}`,
-      `${this.seccionCotizacion.mensajeSolicitud.etiquetaTotalEstimado}: $${this.total}`
+      `${this.seccionCotizacion.mensajeSolicitud.etiquetaTotalEstimado}: ${this.formatPrice(this.total)}`
     ].join('\n');
 
     return quoteDetails;
@@ -303,16 +310,24 @@ export class AppComponent implements OnInit {
     this.applyTheme(theme);
   }
 
-  getCatalogPrice(category: ProductCategory): number {
-    return category === 'dulce' ? this.sweetPrice : this.saltyPrice;
-  }
-
   getCategoryLabel(category: ProductCategory): string {
-    return category === 'dulce' ? 'Dulce' : 'Salada';
+    if (category === 'dulce') {
+      return 'Dulce';
+    }
+
+    if (category === 'salada') {
+      return 'Salada';
+    }
+
+    return 'Dulce/salada';
   }
 
   getQuoteLineTotal(product: QuoteProduct): number {
     return (product.quantity ?? 0) * product.price;
+  }
+
+  formatPrice(value: number): string {
+    return `$${this.priceFormatter.format(value)} MXN`;
   }
 
   normalizeQuantity(product: QuoteProduct): void {
@@ -692,10 +707,7 @@ export class AppComponent implements OnInit {
   }
 
   private buildCatalogProducts(products: readonly ProductConfig[]): Product[] {
-    return products.map((product) => ({
-      ...product,
-      price: this.getCatalogPrice(product.category)
-    }));
+    return products.map((product) => ({ ...product }));
   }
 
   private createQuoteProducts(products: readonly Product[]): QuoteProduct[] {
@@ -719,7 +731,7 @@ export class AppComponent implements OnInit {
           category,
           description: this.resolveDescription(product) || fallback?.description || 'Producto disponible para cotización inmediata.',
           image: this.resolveImage(this.resolveRawImage(product), fallback?.image, category),
-          price: this.resolvePrice(this.resolveRawPrice(product), category)
+          price: this.resolvePrice(this.resolveRawPrice(product), fallback?.price)
         };
       });
   }
@@ -802,12 +814,18 @@ export class AppComponent implements OnInit {
 
   private resolveCategory(rawCategory?: string, fallback?: ProductCategory): ProductCategory {
     const normalizedCategory = rawCategory?.trim().toLowerCase() ?? '';
+    const hasSweetCategory = normalizedCategory.includes('dul') || normalizedCategory.includes('sweet');
+    const hasSaltyCategory = normalizedCategory.includes('sal') || normalizedCategory.includes('sav');
 
-    if (normalizedCategory.includes('dul') || normalizedCategory.includes('sweet')) {
+    if (normalizedCategory.includes('mixt') || normalizedCategory.includes('ambi') || normalizedCategory.includes('/') || (hasSweetCategory && hasSaltyCategory)) {
+      return 'dulce/salada';
+    }
+
+    if (hasSweetCategory) {
       return 'dulce';
     }
 
-    if (normalizedCategory.includes('sal') || normalizedCategory.includes('sav')) {
+    if (hasSaltyCategory) {
       return 'salada';
     }
 
@@ -826,7 +844,7 @@ export class AppComponent implements OnInit {
     return category === 'dulce' ? 'products/caramelo-clasico.svg' : 'products/queso-chipotle.svg';
   }
 
-  private resolvePrice(rawPrice: number | string | undefined, category: ProductCategory): number {
+  private resolvePrice(rawPrice: number | string | undefined, fallbackPrice?: number): number {
     if (typeof rawPrice === 'number' && Number.isFinite(rawPrice)) {
       return rawPrice;
     }
@@ -839,6 +857,10 @@ export class AppComponent implements OnInit {
       }
     }
 
-    return this.getCatalogPrice(category);
+    if (typeof fallbackPrice === 'number' && Number.isFinite(fallbackPrice)) {
+      return fallbackPrice;
+    }
+
+    return 0;
   }
 }

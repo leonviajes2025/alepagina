@@ -137,11 +137,12 @@ describe('AppComponent', () => {
     expect(compiled.querySelector('.theme-toggle-copy strong')?.textContent).toContain('Oscuro');
   });
 
-  it('should compute config-based prices for product categories', () => {
+  it('should preserve the configured price of each catalog product', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.getCatalogPrice('salada')).toBe(siteConfig.productPrices.salty);
-    expect(app.getCatalogPrice('dulce')).toBe(siteConfig.productPrices.sweet);
+
+    expect(app.products[0].price).toBe(siteConfig.products[0].price);
+    expect(app.products[6].price).toBe(siteConfig.products[6].price);
   });
 
   it('should initialize quote quantities as empty', () => {
@@ -152,7 +153,7 @@ describe('AppComponent', () => {
     expect(app.totalQuoteQuantity).toBe(0);
   });
 
-  it('should calculate the quote subtotal using selected flavors', () => {
+  it('should calculate the quote subtotal using the price of each selected product', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     const esquite = app.quoteProducts.find((product) => product.flavor === 'Esquite');
@@ -161,14 +162,34 @@ describe('AppComponent', () => {
     expect(esquite).toBeTruthy();
     expect(caramelo).toBeTruthy();
 
+    esquite!.price = 42;
     esquite!.quantity = 10;
+    caramelo!.price = 50;
     caramelo!.quantity = 5;
     app.quoteDelivery = false;
 
-    expect(app.saltySubtotal).toBe(10 * siteConfig.productPrices.salty);
-    expect(app.sweetSubtotal).toBe(5 * siteConfig.productPrices.sweet);
-    expect(app.subtotal).toBe((10 * siteConfig.productPrices.salty) + (5 * siteConfig.productPrices.sweet));
+    expect(app.saltySubtotal).toBe(10 * 42);
+    expect(app.sweetSubtotal).toBe(5 * 50);
+    expect(app.subtotal).toBe((10 * 42) + (5 * 50));
     expect(app.total).toBe(app.subtotal);
+  });
+
+  it('should support dual-category products in the quote summary without duplicating totals', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    const mixedProduct = app.quoteProducts[0];
+
+    mixedProduct.category = 'dulce/salada';
+    mixedProduct.price = 48;
+    mixedProduct.quantity = 3;
+    app.quoteDelivery = false;
+
+    expect(app.mixedQuoteProducts).toContain(mixedProduct);
+    expect(app.mixedSubtotal).toBe(144);
+    expect(app.saltySubtotal).toBe(0);
+    expect(app.sweetSubtotal).toBe(0);
+    expect(app.subtotal).toBe(144);
+    expect(app.quoteRequestText).toContain('Subtotal dulce/salada: $144 MXN');
   });
 
   it('should include the quote breakdown in the WhatsApp link', () => {
@@ -191,7 +212,7 @@ describe('AppComponent', () => {
     expect(decodedMessage).toContain('- Caramelo: 8 piezas');
     expect(decodedMessage).toContain('Total de piezas: 20');
     expect(decodedMessage).toContain('Entrega: Sí');
-    expect(decodedMessage).toContain(`Total estimado: $${app.total}`);
+    expect(decodedMessage).toContain(`Total estimado: ${app.formatPrice(app.total)}`);
   });
 
   it('should use singular and plural piece labels correctly in the WhatsApp text', () => {
@@ -224,7 +245,8 @@ describe('AppComponent', () => {
 
     expect(app.saltyQuoteProducts.every((product) => product.category === 'salada')).toBeTrue();
     expect(app.sweetQuoteProducts.every((product) => product.category === 'dulce')).toBeTrue();
-    expect(app.saltyQuoteProducts.length + app.sweetQuoteProducts.length).toBe(app.quoteProducts.length);
+    expect(app.mixedQuoteProducts.every((product) => product.category === 'dulce/salada')).toBeTrue();
+    expect(app.saltyQuoteProducts.length + app.sweetQuoteProducts.length + app.mixedQuoteProducts.length).toBe(app.quoteProducts.length);
   });
 
   it('should clear all selected quote items and delivery', () => {
@@ -399,6 +421,33 @@ describe('AppComponent', () => {
     expect(app.products[0].category).toBe('dulce');
     expect(app.products[0].price).toBe(41.5);
     expect(app.products[0].description).toBe('Producto remoto alterno');
+  });
+
+  it('should map dulce/salada as a valid product category from the API', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    fixture.detectChanges();
+
+    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/visibles`);
+    expect(request.request.method).toBe('GET');
+
+    request.flush([
+      {
+        id: 31,
+        nombre: 'Mix especial',
+        categoria: 'dulce/salada',
+        descripcion: 'Combinación de temporada',
+        precio: 47,
+        imagenUrl: 'products/caramelo-clasico.svg',
+        activo: true
+      }
+    ]);
+
+    expect(app.products.length).toBe(1);
+    expect(app.products[0].category).toBe('dulce/salada');
+    expect(app.getCategoryLabel(app.products[0].category)).toBe('Dulce/salada');
+    expect(app.products[0].price).toBe(47);
   });
 
   it('should register the WhatsApp quote detail before opening the chat', () => {
