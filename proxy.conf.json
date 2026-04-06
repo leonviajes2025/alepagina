@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "https://back-2-hazel.vercel.app",
+    "target": "https://api.palomitasbee.com",
     "secure": true,
     "changeOrigin": true,
     "logLevel": "debug"

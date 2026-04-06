@@ -2,7 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const defaultApiBaseUrl = 'https://back-2-hazel.vercel.app/api';
+const defaultApiBaseUrl = 'https://api.palomitasbee.com/api';
 const apiBaseUrl = (process.env.NG_APP_API_BASE_URL || process.env.API_BASE_URL || defaultApiBaseUrl).trim();
 const apiDiagnosticsEnabled = /^(1|true|yes|on)$/i.test(process.env.NG_APP_API_DIAGNOSTICS ?? 'false');
 
