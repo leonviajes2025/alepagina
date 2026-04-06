@@ -368,12 +368,42 @@ export class AppComponent implements OnInit {
           const pedidoId = this.resolveNumericId(response.id);
 
           if (pedidoId == null) {
+            this.api.registerApiIssue({
+              origen: 'checkout',
+              metodo: 'POST',
+              codigo: 'INVALID_WHATSAPP_QUOTE_ID',
+              mensaje: 'La API devolvio una cotizacion sin id valido.',
+              detalle: 'La respuesta de /contactos-whats no contiene un id numerico utilizable para registrar el detalle.',
+              contexto: {
+                endpoint: `${this.apiBaseUrl}/contactos-whats`,
+                response
+              }
+            });
+
             return throwError(() => new Error('La API no devolvió un id de cotización válido.'));
           }
 
           const detailPayloads = this.buildQuoteDetailPayloads(pedidoId);
 
           if (detailPayloads.length !== this.selectedQuoteProducts.length) {
+            this.api.registerApiIssue({
+              origen: 'checkout',
+              metodo: 'POST',
+              codigo: 'INVALID_QUOTE_DETAIL_PAYLOAD',
+              mensaje: 'No fue posible construir todos los detalles de la cotizacion.',
+              detalle: 'La API devolvio ids incompletos o la configuracion local no pudo asociar todos los productos seleccionados.',
+              contexto: {
+                endpoint: `${this.apiBaseUrl}/cotizacion-detalle`,
+                pedidoId,
+                productosSeleccionados: this.selectedQuoteProducts.map((product) => ({
+                  flavor: product.flavor,
+                  id: product.id,
+                  quantity: product.quantity
+                })),
+                payloadsGenerados: detailPayloads
+              }
+            });
+
             return throwError(() => new Error('No todos los productos tienen un id válido para guardar el detalle.'));
           }
 
@@ -565,6 +595,18 @@ export class AppComponent implements OnInit {
 
           if (mappedProducts.length === 0) {
             this.productsError = this.seccionProductos.mensajeProductosInvalidos;
+            this.api.registerApiIssue({
+              origen: 'catalogo-productos',
+              metodo: 'GET',
+              codigo: 'INVALID_PRODUCTS_PAYLOAD',
+              mensaje: 'La API respondio con un payload de productos no valido.',
+              detalle: 'La respuesta no contiene productos visibles que cumplan con el contrato esperado por el frontend.',
+              contexto: {
+                endpoint: this.productsEndpoint,
+                productosRecibidos: products.length,
+                muestra: products.slice(0, 3)
+              }
+            });
             this.apiConnectionDiagnostic = {
               status: 'error',
               title: 'La API respondió, pero con datos no válidos',

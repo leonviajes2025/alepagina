@@ -67,6 +67,24 @@ describe('AppComponent', () => {
     ]);
   }
 
+  function flushLogRequest(origen: string, metodo: string, codigo?: string): void {
+    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/logs-errores`);
+
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body.dominio).toBe('frontend-web');
+    expect(request.request.body.origen).toBe(origen);
+    expect(request.request.body.metodo).toBe(metodo);
+    expect(typeof request.request.body.mensaje).toBe('string');
+    expect(typeof request.request.body.detalle).toBe('string');
+    expect(typeof request.request.body.fechaOcurrencia).toBe('string');
+
+    if (codigo) {
+      expect(request.request.body.codigo).toBe(codigo);
+    }
+
+    request.flush({ ok: true });
+  }
+
   it('should create the app', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
@@ -319,6 +337,8 @@ describe('AppComponent', () => {
       statusText: 'Unknown Error'
     });
 
+    flushLogRequest('catalogo-productos', 'GET', 'NETWORK_ERROR');
+
     expect(app.productsError).toBeTruthy();
     expect(app.apiConnectionDiagnostic.status).toBe('error');
     expect(app.apiConnectionDiagnostic.title).toContain('API no respondió');
@@ -342,6 +362,8 @@ describe('AppComponent', () => {
       status: 404,
       statusText: 'Not Found'
     });
+
+    flushLogRequest('catalogo-productos', 'GET', 'HTTP_404');
 
     expect(app.apiConnectionDiagnostic.status).toBe('error');
     expect(app.apiConnectionDiagnostic.title).toContain('Endpoint no encontrado');
@@ -424,6 +446,23 @@ describe('AppComponent', () => {
     expect(app.products[0].price).toBe(41.5);
     expect(app.products[0].description).toBe('Producto remoto alterno');
     expect(app.products[0].image).toBe('products/chocolate-oscuro.svg');
+  });
+
+  it('should log invalid product payloads returned by the API', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    fixture.detectChanges();
+
+    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/visibles`);
+    expect(request.request.method).toBe('GET');
+
+    request.flush({ data: { rows: [{ visible: true }] } });
+
+    flushLogRequest('catalogo-productos', 'GET', 'INVALID_PRODUCTS_PAYLOAD');
+
+    expect(app.productsError).toBe('La API no devolvió productos válidos. Se muestra el catálogo base.');
+    expect(app.apiConnectionDiagnostic.status).toBe('error');
   });
 
   it('should hide products marked as not visible by the API', () => {
@@ -525,6 +564,27 @@ describe('AppComponent', () => {
 
     expect(app.quoteRequestState).toBe('success');
     expect(openSpy).toHaveBeenCalled();
+  });
+
+  it('should log a contract error when the quote response does not include a valid id', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    fixture.detectChanges();
+    flushProductsRequest();
+
+    app.quoteProducts[0].quantity = 3;
+    app.submitQuoteRequest();
+
+    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/contactos-whats`);
+    expect(request.request.method).toBe('POST');
+    request.flush({});
+
+    flushLogRequest('checkout', 'POST', 'INVALID_WHATSAPP_QUOTE_ID');
+
+    httpTestingController.expectNone(`${siteConfig.apiBaseUrl}/cotizacion-detalle`);
+    expect(app.quoteRequestState).toBe('error');
+    expect(app.quoteRequestMessage).toBe('No fue posible registrar la cotización por ahora. Intenta nuevamente.');
   });
 
   it('should not submit the quote when products are only available from the fallback catalog', () => {
@@ -638,6 +698,32 @@ describe('AppComponent', () => {
     expect(app.contactRequestState).toBe('success');
     expect(app.contactForm.nombre).toBe('');
     expect(app.contactForm.pregunta).toBe('');
+  });
+
+  it('should log contact endpoint failures', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    app.contactForm = {
+      nombre: 'Marta Soto',
+      email: 'marta.postman@example.com',
+      telefono: '+5215555555510',
+      aceptaPromociones: true,
+      pregunta: 'Tienen disponibilidad inmediata?'
+    };
+
+    app.submitContactRequest();
+
+    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/contactos`);
+    request.flush({ codigo: 'CONTACT_DUPLICATED' }, {
+      status: 409,
+      statusText: 'Conflict'
+    });
+
+    flushLogRequest('contacto', 'POST', 'CONTACT_DUPLICATED');
+
+    expect(app.contactRequestState).toBe('error');
+    expect(app.contactRequestMessage).toBe('No se pudo registrar tu contacto. Intenta nuevamente.');
   });
 
   it('should omit the optional contact question when it is empty', () => {

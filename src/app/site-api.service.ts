@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { catchError, map, throwError, type Observable } from 'rxjs';
+import { catchError, map, of, switchMap, throwError, type Observable } from 'rxjs';
 import { siteConfig } from './site.config';
 
 export type ApiProductDto = {
@@ -38,12 +38,40 @@ export type QuoteDetailRequest = {
   numeroPiezas: number;
 };
 
+export type ApiErrorLogRequest = {
+  dominio: 'frontend-web';
+  origen: string;
+  metodo: string;
+  codigo: string;
+  mensaje: string;
+  detalle: string;
+  contexto: string;
+  fechaOcurrencia: string;
+};
+
 type ProductsResponse = unknown;
+
+type ApiRequestLogContext = {
+  origen: string;
+  metodo: string;
+  endpoint: string;
+  contexto?: Record<string, unknown>;
+};
+
+type ApiIssueLogOptions = {
+  origen: string;
+  metodo: string;
+  codigo: string;
+  mensaje: string;
+  detalle: string;
+  contexto?: unknown;
+};
 
 @Injectable({ providedIn: 'root' })
 export class SiteApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = siteConfig.apiBaseUrl;
+  private readonly logsEndpoint = `${this.baseUrl}/logs-errores`;
   private readonly productEndpoints: readonly string[] = [
     `${this.baseUrl}/productos/visibles`,
     `${this.baseUrl}/productos`
@@ -76,31 +104,264 @@ export class SiteApiService {
     return this.requestProducts(this.primaryProductsEndpoint).pipe(
       catchError((error: unknown) => {
         if (!this.shouldFallbackProductsEndpoint(error) || this.fallbackProductsEndpoint == null) {
-          return throwError(() => error);
+          return this.logHttpErrorAndRethrow(error, {
+            origen: 'catalogo-productos',
+            metodo: 'GET',
+            endpoint: this.primaryProductsEndpoint,
+            contexto: {
+              endpointPrincipal: this.primaryProductsEndpoint,
+              endpointAlterno: this.fallbackProductsEndpoint
+            }
+          });
         }
 
-        this.resolvedProductsEndpoint = this.fallbackProductsEndpoint;
+        const fallbackEndpoint = this.fallbackProductsEndpoint;
 
-        return this.requestProducts(this.fallbackProductsEndpoint);
+        this.resolvedProductsEndpoint = fallbackEndpoint;
+
+        return this.requestWithErrorLogging(
+          {
+            origen: 'catalogo-productos',
+            metodo: 'GET',
+            endpoint: fallbackEndpoint,
+            contexto: {
+              endpointPrincipal: this.primaryProductsEndpoint,
+              endpointAlterno: fallbackEndpoint,
+              fallbackActivadoPor404: true
+            }
+          },
+          () => this.requestProducts(fallbackEndpoint)
+        );
       }),
       map((response) => this.extractProducts(response))
     );
   }
 
   submitWhatsappQuote(payload: WhatsappQuoteRequest): Observable<WhatsappQuoteResponse> {
-    return this.http.post<WhatsappQuoteResponse>(`${this.baseUrl}/contactos-whats`, payload);
+    const endpoint = `${this.baseUrl}/contactos-whats`;
+
+    return this.requestWithErrorLogging(
+      {
+        origen: 'checkout',
+        metodo: 'POST',
+        endpoint,
+        contexto: {
+          fase: 'cotizacion-whatsapp'
+        }
+      },
+      () => this.http.post<WhatsappQuoteResponse>(endpoint, payload)
+    );
   }
 
   createQuoteDetail(payload: QuoteDetailRequest): Observable<unknown> {
-    return this.http.post(`${this.baseUrl}/cotizacion-detalle`, payload);
+    const endpoint = `${this.baseUrl}/cotizacion-detalle`;
+
+    return this.requestWithErrorLogging(
+      {
+        origen: 'checkout',
+        metodo: 'POST',
+        endpoint,
+        contexto: {
+          fase: 'cotizacion-detalle'
+        }
+      },
+      () => this.http.post(endpoint, payload)
+    );
   }
 
   createContact(payload: ContactLeadRequest): Observable<unknown> {
-    return this.http.post(`${this.baseUrl}/contactos`, payload);
+    const endpoint = `${this.baseUrl}/contactos`;
+
+    return this.requestWithErrorLogging(
+      {
+        origen: 'contacto',
+        metodo: 'POST',
+        endpoint
+      },
+      () => this.http.post(endpoint, payload)
+    );
+  }
+
+  registerApiIssue(options: ApiIssueLogOptions): void {
+    this.sendLogEntry(this.buildLogEntry(options)).subscribe();
   }
 
   private requestProducts(endpoint: string): Observable<ProductsResponse> {
     return this.http.get<ProductsResponse>(endpoint);
+  }
+
+  private requestWithErrorLogging<T>(
+    requestContext: ApiRequestLogContext,
+    requestFactory: () => Observable<T>
+  ): Observable<T> {
+    return requestFactory().pipe(
+      catchError((error: unknown) => this.logHttpErrorAndRethrow(error, requestContext))
+    );
+  }
+
+  private logHttpErrorAndRethrow(error: unknown, requestContext: ApiRequestLogContext): Observable<never> {
+    if (this.isLogsEndpoint(requestContext.endpoint)) {
+      return throwError(() => error);
+    }
+
+    return this.sendLogEntry(this.buildHttpErrorLogEntry(error, requestContext)).pipe(
+      switchMap(() => throwError(() => error))
+    );
+  }
+
+  private buildHttpErrorLogEntry(error: unknown, requestContext: ApiRequestLogContext): ApiErrorLogRequest {
+    const endpointPath = this.resolveEndpointPath(requestContext.endpoint);
+
+    return this.buildLogEntry({
+      origen: requestContext.origen,
+      metodo: requestContext.metodo,
+      codigo: this.resolveApiErrorCode(error),
+      mensaje: `No fue posible completar ${requestContext.metodo} ${endpointPath}.`,
+      detalle: this.buildHttpErrorDetail(error),
+      contexto: {
+        endpoint: requestContext.endpoint,
+        origen: requestContext.origen,
+        metodo: requestContext.metodo,
+        ...requestContext.contexto,
+        ...this.buildHttpErrorContext(error)
+      }
+    });
+  }
+
+  private buildLogEntry(options: ApiIssueLogOptions): ApiErrorLogRequest {
+    return {
+      dominio: 'frontend-web',
+      origen: options.origen,
+      metodo: options.metodo,
+      codigo: options.codigo,
+      mensaje: options.mensaje,
+      detalle: options.detalle,
+      contexto: this.stringifyContext(options.contexto),
+      fechaOcurrencia: new Date().toISOString()
+    };
+  }
+
+  private sendLogEntry(entry: ApiErrorLogRequest): Observable<unknown> {
+    return this.http.post(this.logsEndpoint, entry).pipe(
+      catchError(() => of(null))
+    );
+  }
+
+  private isLogsEndpoint(endpoint: string): boolean {
+    return endpoint === this.logsEndpoint;
+  }
+
+  private resolveApiErrorCode(error: unknown): string {
+    if (!(error instanceof HttpErrorResponse)) {
+      return 'UNKNOWN_API_ERROR';
+    }
+
+    const apiCode = this.readErrorCodeCandidate(error.error);
+
+    if (apiCode) {
+      return apiCode;
+    }
+
+    if (error.status === 0) {
+      return 'NETWORK_ERROR';
+    }
+
+    return `HTTP_${error.status}`;
+  }
+
+  private readErrorCodeCandidate(errorBody: unknown): string | null {
+    if (typeof errorBody !== 'object' || errorBody == null) {
+      return null;
+    }
+
+    const record = errorBody as Record<string, unknown>;
+
+    for (const key of ['codigo', 'code', 'error']) {
+      const value = record[key];
+
+      if (typeof value === 'string' && value.trim().length > 0) {
+        return value.trim();
+      }
+    }
+
+    return null;
+  }
+
+  private buildHttpErrorDetail(error: unknown): string {
+    if (!(error instanceof HttpErrorResponse)) {
+      return this.stringifyUnknownError(error);
+    }
+
+    const detailParts = [
+      `status=${error.status}`,
+      `statusText=${error.statusText || 'sin-texto'}`,
+      `message=${error.message}`
+    ];
+
+    const errorBody = this.stringifyErrorBody(error.error);
+
+    if (errorBody) {
+      detailParts.push(`body=${errorBody}`);
+    }
+
+    return detailParts.join(' | ');
+  }
+
+  private buildHttpErrorContext(error: unknown): Record<string, unknown> {
+    if (!(error instanceof HttpErrorResponse)) {
+      return {
+        detalleOriginal: this.stringifyUnknownError(error)
+      };
+    }
+
+    return {
+      status: error.status,
+      statusText: error.statusText,
+      url: error.url,
+      errorBody: this.parseErrorBody(error.error)
+    };
+  }
+
+  private parseErrorBody(errorBody: unknown): unknown {
+    if (typeof errorBody === 'string') {
+      try {
+        return JSON.parse(errorBody);
+      } catch {
+        return errorBody;
+      }
+    }
+
+    return errorBody;
+  }
+
+  private stringifyErrorBody(errorBody: unknown): string {
+    if (errorBody == null) {
+      return '';
+    }
+
+    if (typeof errorBody === 'string') {
+      return errorBody;
+    }
+
+    return this.stringifyUnknownError(errorBody);
+  }
+
+  private stringifyContext(context: unknown): string {
+    if (context == null) {
+      return '';
+    }
+
+    if (typeof context === 'string') {
+      return context;
+    }
+
+    return this.stringifyUnknownError(context);
+  }
+
+  private resolveEndpointPath(endpoint: string): string {
+    return endpoint.startsWith(this.baseUrl)
+      ? endpoint.slice(this.baseUrl.length)
+      : endpoint;
   }
 
   private shouldFallbackProductsEndpoint(error: unknown): error is HttpErrorResponse {
@@ -159,5 +420,21 @@ export class SiteApiService {
       record['precio'],
       record['imagenUrl']
     ].some((candidate) => candidate !== undefined);
+  }
+
+  private stringifyUnknownError(error: unknown): string {
+    if (typeof error === 'string') {
+      return error;
+    }
+
+    if (error instanceof Error) {
+      return error.message;
+    }
+
+    try {
+      return JSON.stringify(error);
+    } catch {
+      return 'No fue posible serializar el error.';
+    }
   }
 }
