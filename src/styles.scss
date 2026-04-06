@@ -154,6 +154,62 @@ select {
 	justify-self: flex-start;
 }
 
+app-root .site-header-actions {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 1rem;
+	flex: 1;
+	min-width: 0;
+}
+
+app-root .theme-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.75rem;
+	min-height: 3rem;
+	padding: 0.5rem 0.85rem;
+	border: 1px solid var(--theme-toggle-border);
+	border-radius: 999px;
+	background: var(--theme-toggle-background);
+	box-shadow: var(--theme-toggle-shadow);
+	color: var(--ink-900);
+	cursor: pointer;
+	transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+}
+
+app-root .theme-toggle:hover {
+	transform: translateY(-2px);
+}
+
+app-root .theme-toggle-indicator {
+	width: 1.85rem;
+	height: 1.85rem;
+	border-radius: 999px;
+	background: linear-gradient(135deg, var(--gold-400), var(--caramel-500));
+	box-shadow: 0 0.65rem 1.15rem rgba(181, 96, 48, 0.22);
+	flex-shrink: 0;
+}
+
+app-root .theme-toggle-copy {
+	display: grid;
+	gap: 0.1rem;
+	text-align: left;
+}
+
+app-root .theme-toggle-copy small {
+	font-size: 0.68rem;
+	font-weight: 800;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--ink-600);
+}
+
+app-root .theme-toggle-copy strong {
+	font-size: 0.92rem;
+	line-height: 1.1;
+}
+
 @keyframes fade-up {
 	from {
 		opacity: 0;
@@ -173,5 +229,204 @@ select {
 
 	to {
 		transform: rotate(360deg);
+	}
+}
+
+html[data-theme='oscuro'] app-root .page-shell::before {
+	background: radial-gradient(circle, rgba(255, 174, 66, 0.28), transparent 70%);
+}
+
+html[data-theme='oscuro'] app-root .page-shell::after {
+	background: radial-gradient(circle, rgba(207, 106, 47, 0.18), transparent 72%);
+}
+
+html[data-theme='oscuro'] app-root .menu-toggle,
+html[data-theme='oscuro'] app-root .theme-toggle,
+html[data-theme='oscuro'] app-root .quick-action-card,
+html[data-theme='oscuro'] app-root .showcase-card,
+html[data-theme='oscuro'] app-root .product-card,
+html[data-theme='oscuro'] app-root .service-card,
+html[data-theme='oscuro'] app-root .contact-card,
+html[data-theme='oscuro'] app-root .quote-card,
+html[data-theme='oscuro'] app-root .quote-group-card,
+html[data-theme='oscuro'] app-root .quote-flavor-card,
+html[data-theme='oscuro'] app-root .quote-summary > div,
+html[data-theme='oscuro'] app-root .quote-whatsapp-action,
+html[data-theme='oscuro'] app-root .status-banner {
+	border-color: var(--card-border);
+	box-shadow: var(--card-shadow);
+	background: var(--surface-1);
+}
+
+html[data-theme='oscuro'] app-root .site-nav a:hover,
+html[data-theme='oscuro'] app-root .service-card li,
+html[data-theme='oscuro'] app-root .hero-points span,
+html[data-theme='oscuro'] app-root .service-badge,
+html[data-theme='oscuro'] app-root .quote-group-label,
+html[data-theme='oscuro'] app-root .quote-flavor-category,
+html[data-theme='oscuro'] app-root .product-category,
+html[data-theme='oscuro'] app-root .trust-accent {
+	background: var(--badge-background);
+	color: var(--caramel-700);
+	border-color: var(--card-border);
+}
+
+html[data-theme='oscuro'] app-root .menu-toggle {
+	background: var(--surface-4);
+	border-color: var(--card-border);
+}
+
+html[data-theme='oscuro'] app-root .theme-toggle {
+	background: var(--theme-toggle-background);
+	border-color: var(--theme-toggle-border);
+	box-shadow: none;
+}
+
+html[data-theme='oscuro'] app-root .menu-toggle span {
+	background: var(--ink-900);
+}
+
+html[data-theme='oscuro'] app-root .site-nav a:hover {
+	background: var(--surface-4);
+}
+
+html[data-theme='oscuro'] app-root .button-secondary {
+	background: var(--surface-4);
+	border-color: var(--card-border);
+}
+
+html[data-theme='oscuro'] app-root .hive-grid {
+	background:
+		radial-gradient(circle at 18% 22%, rgba(255, 246, 214, 0.22), transparent 8%),
+		radial-gradient(circle at 74% 30%, rgba(242, 188, 73, 0.18), transparent 10%),
+		linear-gradient(30deg, rgba(242, 188, 73, 0.09) 12%, transparent 12.5%, transparent 87%, rgba(242, 188, 73, 0.09) 87.5%),
+		linear-gradient(150deg, rgba(242, 188, 73, 0.09) 12%, transparent 12.5%, transparent 87%, rgba(242, 188, 73, 0.09) 87.5%),
+		linear-gradient(90deg, rgba(242, 188, 73, 0.07) 2%, transparent 2.5%, transparent 97%, rgba(242, 188, 73, 0.07) 97.5%);
+}
+
+html[data-theme='oscuro'] app-root .hero-orbit {
+	border-color: rgba(242, 188, 73, 0.16);
+}
+
+html[data-theme='oscuro'] app-root .showcase-main {
+	background:
+		linear-gradient(160deg, rgba(98, 57, 39, 0.92), rgba(37, 25, 31, 0.94)),
+		url('/products/caramelo-clasico.svg') right bottom / 44% no-repeat;
+}
+
+html[data-theme='oscuro'] app-root .intro-band {
+	background: linear-gradient(120deg, rgba(92, 56, 33, 0.82), rgba(56, 36, 37, 0.72));
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme='oscuro'] app-root .trust-card,
+html[data-theme='oscuro'] app-root .showcase-card {
+	background: var(--surface-2);
+}
+
+html[data-theme='oscuro'] app-root .product-card img {
+	background: linear-gradient(145deg, rgba(78, 53, 42, 0.92), rgba(110, 66, 43, 0.82));
+}
+
+html[data-theme='oscuro'] app-root .service-card li,
+html[data-theme='oscuro'] app-root .quote-summary > div,
+html[data-theme='oscuro'] app-root .quote-whatsapp-action,
+html[data-theme='oscuro'] app-root .quote-flavor-card {
+	background: var(--surface-3);
+}
+
+html[data-theme='oscuro'] app-root .contact-form input,
+html[data-theme='oscuro'] app-root .contact-form textarea,
+html[data-theme='oscuro'] app-root .quote-form input[type='text'],
+html[data-theme='oscuro'] app-root .quote-form input[type='date'],
+html[data-theme='oscuro'] app-root .quote-form input[type='number'] {
+	background: var(--field-background);
+	border-color: var(--field-border);
+	color: var(--ink-900);
+}
+
+html[data-theme='oscuro'] app-root .contact-form input::placeholder,
+html[data-theme='oscuro'] app-root .contact-form textarea::placeholder,
+html[data-theme='oscuro'] app-root .quote-form input[type='text']::placeholder,
+html[data-theme='oscuro'] app-root .quote-form input[type='date']::placeholder,
+html[data-theme='oscuro'] app-root .quote-form input[type='number']::placeholder {
+	color: rgba(236, 209, 176, 0.54);
+}
+
+html[data-theme='oscuro'] app-root .contact-form input:focus,
+html[data-theme='oscuro'] app-root .contact-form textarea:focus,
+html[data-theme='oscuro'] app-root .quote-form input[type='text']:focus,
+html[data-theme='oscuro'] app-root .quote-form input[type='date']:focus,
+html[data-theme='oscuro'] app-root .quote-form input[type='number']:focus {
+	outline: none;
+	border-color: var(--field-focus-border);
+	box-shadow: 0 0 0 4px var(--field-focus-ring);
+}
+
+html[data-theme='oscuro'] app-root .quote-contact-field input[type='text'],
+html[data-theme='oscuro'] app-root .quote-contact-field input[type='date'] {
+	background: var(--field-background);
+	border-color: var(--field-border);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+html[data-theme='oscuro'] app-root .quote-contact-field input[type='text']:focus,
+html[data-theme='oscuro'] app-root .quote-contact-field input[type='date']:focus {
+	border-color: var(--field-focus-border);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.04),
+		0 0 0 4px var(--field-focus-ring);
+	background: linear-gradient(180deg, rgba(60, 42, 49, 1), rgba(44, 30, 37, 0.96));
+}
+
+html[data-theme='oscuro'] app-root .quote-contact-field input[type='text']::placeholder,
+html[data-theme='oscuro'] app-root .quote-contact-field input[type='date']::placeholder {
+	color: rgba(236, 209, 176, 0.54);
+}
+
+html[data-theme='oscuro'] app-root .quote-total {
+	background: linear-gradient(135deg, rgba(203, 109, 55, 0.84), rgba(112, 64, 58, 0.82));
+}
+
+html[data-theme='oscuro'] app-root .status-banner-info {
+	background: var(--status-info-bg);
+}
+
+html[data-theme='oscuro'] app-root .status-banner-warning {
+	background: var(--status-warning-bg);
+}
+
+html[data-theme='oscuro'] app-root .status-banner-success {
+	background: var(--status-success-bg);
+	color: var(--status-success-text);
+}
+
+html[data-theme='oscuro'] app-root .status-banner-error {
+	background: var(--status-error-bg);
+	color: var(--status-error-text);
+}
+
+html[data-theme='oscuro'] app-root .mobile-hud {
+	background: rgba(12, 8, 11, 0.88);
+	box-shadow: 0 1.4rem 2.4rem rgba(0, 0, 0, 0.28);
+}
+
+html[data-theme='oscuro'] app-root .mobile-hud a {
+	background: rgba(242, 188, 73, 0.14);
+	color: #fff1dd;
+}
+
+@media (max-width: 720px) {
+	app-root .site-header-actions {
+		width: 100%;
+		flex-wrap: wrap;
+	}
+
+	app-root .theme-toggle {
+		order: -1;
+	}
+
+	html[data-theme='oscuro'] app-root .site-nav a {
+		background: var(--surface-4);
 	}
 }
