@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { map, type Observable } from 'rxjs';
+import { catchError, map, throwError, type Observable } from 'rxjs';
 import { siteConfig } from './site.config';
 
 export type ApiProductDto = {
@@ -56,15 +56,47 @@ type ProductsResponse = unknown;
 export class SiteApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = siteConfig.apiBaseUrl;
+  private readonly productEndpoints: readonly string[] = [
+    `${this.baseUrl}/productos/activos`,
+    `${this.baseUrl}/productos`
+  ];
+  private resolvedProductsEndpoint: string = this.productEndpoints[0];
 
   get apiBaseUrl(): string {
 	return this.baseUrl;
   }
 
+  get productsEndpoint(): string {
+    return this.resolvedProductsEndpoint;
+  }
+
+  get primaryProductsEndpoint(): string {
+    return this.productEndpoints[0];
+  }
+
+  get fallbackProductsEndpoint(): string | null {
+    return this.productEndpoints[1] ?? null;
+  }
+
+  get usingFallbackProductsEndpoint(): boolean {
+    return this.resolvedProductsEndpoint === this.fallbackProductsEndpoint;
+  }
+
   getProducts(): Observable<ApiProductDto[]> {
-    return this.http
-      .get<ProductsResponse>(`${this.baseUrl}/productos/activos`)
-      .pipe(map((response) => this.extractProducts(response)));
+    this.resolvedProductsEndpoint = this.primaryProductsEndpoint;
+
+    return this.requestProducts(this.primaryProductsEndpoint).pipe(
+      catchError((error: unknown) => {
+        if (!this.shouldFallbackProductsEndpoint(error) || this.fallbackProductsEndpoint == null) {
+          return throwError(() => error);
+        }
+
+        this.resolvedProductsEndpoint = this.fallbackProductsEndpoint;
+
+        return this.requestProducts(this.fallbackProductsEndpoint);
+      }),
+      map((response) => this.extractProducts(response))
+    );
   }
 
   submitWhatsappQuote(payload: WhatsappQuoteRequest): Observable<WhatsappQuoteResponse> {
@@ -77,6 +109,14 @@ export class SiteApiService {
 
   createContact(payload: ContactLeadRequest): Observable<unknown> {
     return this.http.post(`${this.baseUrl}/contactos`, payload);
+  }
+
+  private requestProducts(endpoint: string): Observable<ProductsResponse> {
+    return this.http.get<ProductsResponse>(endpoint);
+  }
+
+  private shouldFallbackProductsEndpoint(error: unknown): error is HttpErrorResponse {
+    return error instanceof HttpErrorResponse && error.status === 404;
   }
 
   private extractProducts(response: ProductsResponse): ApiProductDto[] {

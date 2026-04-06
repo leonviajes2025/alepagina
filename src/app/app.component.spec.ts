@@ -38,7 +38,7 @@ describe('AppComponent', () => {
   });
 
   function flushProductsRequest(): void {
-      const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/activos`);
+    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/activos`);
 
     expect(request.request.method).toBe('GET');
 
@@ -270,8 +270,14 @@ describe('AppComponent', () => {
 
     fixture.detectChanges();
 
-    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/activos`);
-    request.flush({}, {
+    const activeRequest = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/activos`);
+    activeRequest.flush({}, {
+      status: 404,
+      statusText: 'Not Found'
+    });
+
+    const fallbackRequest = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos`);
+    fallbackRequest.flush({}, {
       status: 404,
       statusText: 'Not Found'
     });
@@ -279,6 +285,40 @@ describe('AppComponent', () => {
     expect(app.apiConnectionDiagnostic.status).toBe('error');
     expect(app.apiConnectionDiagnostic.title).toContain('Endpoint no encontrado');
     expect(app.apiConnectionDiagnostic.details.some((detail) => detail.includes('/productos/activos'))).toBeTrue();
+    expect(app.apiConnectionDiagnostic.details.some((detail) => detail.includes('/productos'))).toBeTrue();
+  });
+
+  it('should fallback to the generic products endpoint when activos returns 404', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    fixture.detectChanges();
+
+    const activeRequest = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/activos`);
+    activeRequest.flush({}, {
+      status: 404,
+      statusText: 'Not Found'
+    });
+
+    const fallbackRequest = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos`);
+    expect(fallbackRequest.request.method).toBe('GET');
+    fallbackRequest.flush([
+      {
+        id: 11,
+        nombre: 'Esquite',
+        categoria: 'salada',
+        descripcion: 'Producto remoto',
+        precio: 32,
+        imagenUrl: 'products/queso-chipotle.svg',
+        activo: true
+      }
+    ]);
+
+    expect(app.productsLoadedFromApi).toBeTrue();
+    expect(app.products.length).toBe(1);
+    expect(app.apiConnectionDiagnostic.status).toBe('success');
+    expect(app.apiConnectionDiagnostic.details.some((detail) => detail.includes('Endpoint resuelto'))).toBeTrue();
+    expect(app.apiConnectionDiagnostic.details.some((detail) => detail.includes('/productos'))).toBeTrue();
   });
 
   it('should support wrapped product responses and alternate field names', () => {

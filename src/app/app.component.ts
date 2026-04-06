@@ -231,7 +231,7 @@ export class AppComponent implements OnInit {
   }
 
   get productsEndpoint(): string {
-    return `${this.apiBaseUrl}/productos/activos`;
+    return this.api.productsEndpoint;
   }
 
   openContactWhatsapp(event: Event): void {
@@ -510,6 +510,7 @@ export class AppComponent implements OnInit {
       .subscribe({
         next: (products) => {
           const mappedProducts = this.mapApiProducts(products);
+          const endpointDetails = this.buildProductsEndpointDetails();
 
           if (mappedProducts.length === 0) {
             this.productsError = this.seccionProductos.mensajeProductosInvalidos;
@@ -518,8 +519,7 @@ export class AppComponent implements OnInit {
               title: 'La API respondió, pero con datos no válidos',
               summary: 'Se recibió una respuesta del backend, pero no se pudieron mapear productos activos.',
               details: [
-                `Base URL configurada: ${this.apiBaseUrl}`,
-                `Endpoint probado: ${this.productsEndpoint}`,
+                ...endpointDetails,
                 'La petición respondió sin error HTTP, así que el problema parece estar en la estructura del payload o en los campos devueltos.'
               ]
             };
@@ -533,10 +533,7 @@ export class AppComponent implements OnInit {
             status: 'success',
             title: 'Conexión con la API correcta',
             summary: `La API respondió correctamente y se cargaron ${mappedProducts.length} productos.`,
-            details: [
-              `Base URL configurada: ${this.apiBaseUrl}`,
-              `Endpoint probado: ${this.productsEndpoint}`
-            ]
+            details: endpointDetails
           };
         },
         error: (error: unknown) => {
@@ -547,10 +544,7 @@ export class AppComponent implements OnInit {
   }
 
   private buildApiConnectionDiagnostic(error: unknown): ApiConnectionDiagnostic {
-    const baseDetails = [
-      `Base URL configurada: ${this.apiBaseUrl}`,
-      `Endpoint probado: ${this.productsEndpoint}`
-    ];
+    const baseDetails = this.buildProductsEndpointDetails();
 
     if (!(error instanceof HttpErrorResponse)) {
       return {
@@ -582,11 +576,11 @@ export class AppComponent implements OnInit {
       return {
         status: 'error',
         title: 'Endpoint no encontrado en la API',
-        summary: 'El backend respondió, pero la ruta probada no existe.',
+        summary: 'El backend respondió, pero ninguna de las rutas probadas para productos existe.',
         details: [
           ...baseDetails,
           'HTTP status: 404',
-          'Verifica que la base URL termine en /api y que exista la ruta /productos/activos.'
+          'Verifica que la base URL termine en /api y que exista la ruta /productos/activos o /productos.'
         ]
       };
     }
@@ -644,6 +638,21 @@ export class AppComponent implements OnInit {
     } catch {
       return 'No fue posible serializar el error.';
     }
+  }
+
+  private buildProductsEndpointDetails(): string[] {
+    const details = [
+      `Base URL configurada: ${this.apiBaseUrl}`,
+      `Endpoint principal: ${this.api.primaryProductsEndpoint}`
+    ];
+
+    if (this.api.fallbackProductsEndpoint) {
+      details.push(`Endpoint alterno: ${this.api.fallbackProductsEndpoint}`);
+    }
+
+    details.push(`Endpoint resuelto: ${this.productsEndpoint}`);
+
+    return details;
   }
 
   private buildCatalogProducts(products: readonly ProductConfig[]): Product[] {
