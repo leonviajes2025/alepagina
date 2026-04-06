@@ -50,6 +50,7 @@ The project is ready to deploy as a static Angular application on Vercel.
 - In development, the app uses the proxy in `proxy.conf.json` and sends requests to `/api`.
 - In production, `npm run build` generates `src/environments/environment.production.ts` from the `NG_APP_API_BASE_URL` variable.
 - If `NG_APP_API_BASE_URL` is not defined, the build falls back to `https://api.palomitasbee.com/api`.
+- The product catalog requests `GET /api/productos/visibles` as the primary endpoint and falls back to `GET /api/productos` if the visible route returns `404`.
 - For a frontend deployed on Vercel, prefer `NG_APP_API_BASE_URL=/api`.
 - The provided `vercel.json` rewrites `/api/*` to `https://api.palomitasbee.com/api/*`, which avoids browser CORS issues because the frontend calls its own origin.
 - Only use a full remote URL such as `https://api.palomitasbee.com/api` if the backend already allows CORS from your Vercel domain.

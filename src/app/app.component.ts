@@ -553,7 +553,7 @@ export class AppComponent implements OnInit {
             this.apiConnectionDiagnostic = {
               status: 'error',
               title: 'La API respondió, pero con datos no válidos',
-              summary: 'Se recibió una respuesta del backend, pero no se pudieron mapear productos activos.',
+              summary: 'Se recibió una respuesta del backend, pero no se pudieron mapear productos visibles.',
               details: [
                 ...endpointDetails,
                 'La petición respondió sin error HTTP, así que el problema parece estar en la estructura del payload o en los campos devueltos.'
@@ -616,7 +616,7 @@ export class AppComponent implements OnInit {
         details: [
           ...baseDetails,
           'HTTP status: 404',
-          'Verifica que la base URL termine en /api y que exista la ruta /productos/activos o /productos.'
+          'Verifica que la base URL termine en /api y que exista la ruta /productos/visibles o /productos.'
         ]
       };
     }

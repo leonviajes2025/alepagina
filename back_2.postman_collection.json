@@ -20,6 +20,26 @@
     {
       "key": "pedidoId",
       "value": "1"
+    },
+    {
+      "key": "usuarioAccesoId",
+      "value": "1"
+    },
+    {
+      "key": "nombreUsuarioAccesoAdmin",
+      "value": "admin"
+    },
+    {
+      "key": "contrasenaAccesoAdmin",
+      "value": "Admin123"
+    },
+    {
+      "key": "nombreUsuarioAccesoNuevo",
+      "value": "supervisor"
+    },
+    {
+      "key": "contrasenaAccesoNueva",
+      "value": "Supervisor123"
     }
   ],
   "item": [
@@ -80,10 +100,10 @@
           }
         },
         {
-          "name": "GET productos activos",
+            "name": "GET productos visibles",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/api/productos/activos"
+            "url": "{{baseUrl}}/api/productos/visibles"
           }
         },
         {
@@ -112,7 +132,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Producto Postman\",\n  \"categoria\": \"Accesorios\",\n  \"descripcion\": \"Creado desde la coleccion de Postman\",\n  \"precio\": \"220.00\",\n  \"imagenUrl\": \"https://example.com/postman.jpg\",\n  \"activo\": true\n}"
+              "raw": "{\n  \"nombre\": \"Producto Postman\",\n  \"categoria\": \"Accesorios\",\n  \"descripcion\": \"Creado desde la coleccion de Postman\",\n  \"precio\": \"220.00\",\n  \"imagenUrl\": \"https://example.com/postman.jpg\",\n  \"activo\": true,\n  \"visible\": true\n}"
             },
             "url": "{{baseUrl}}/api/productos"
           }
@@ -129,7 +149,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Producto Actualizado Postman\",\n  \"categoria\": \"Hogar\",\n  \"precio\": \"180.00\"\n}"
+              "raw": "{\n  \"nombre\": \"Producto Actualizado Postman\",\n  \"categoria\": \"Hogar\",\n  \"precio\": \"180.00\",\n  \"visible\": false\n}"
             },
             "url": "{{baseUrl}}/api/productos/{{productoId}}"
           }
@@ -204,6 +224,166 @@
               "raw": "{\n  \"idPedido\": {{pedidoId}},\n  \"idProducto\": {{productoId}},\n  \"numeroPiezas\": 20\n}"
             },
             "url": "{{baseUrl}}/api/cotizacion-detalle"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Acceso Administrativo",
+      "item": [
+        {
+          "name": "GET usuarios-acceso",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/usuarios-acceso"
+          }
+        },
+        {
+          "name": "POST usuario-acceso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.id) {",
+                  "  pm.collectionVariables.set('usuarioAccesoId', String(response.id));",
+                  "}",
+                  "if (response.nombreUsuario) {",
+                  "  pm.collectionVariables.set('nombreUsuarioAccesoNuevo', response.nombreUsuario);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreUsuario\": \"{{nombreUsuarioAccesoNuevo}}\",\n  \"contrasena\": \"{{contrasenaAccesoNueva}}\",\n  \"nombreCompleto\": \"Supervisor Comercial\",\n  \"tienePermiso\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/usuarios-acceso"
+          }
+        },
+        {
+          "name": "PUT usuario-acceso por id",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreCompleto\": \"Supervisor Ventas\",\n  \"tienePermiso\": false,\n  \"contrasena\": \"NuevaClave123\"\n}"
+            },
+            "url": "{{baseUrl}}/api/usuarios-acceso/{{usuarioAccesoId}}"
+          }
+        },
+        {
+          "name": "POST validar usuario-acceso admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreUsuario\": \"{{nombreUsuarioAccesoAdmin}}\",\n  \"contrasena\": \"{{contrasenaAccesoAdmin}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/usuarios-acceso/validar"
+          }
+        },
+        {
+          "name": "POST validar usuario-acceso nuevo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreUsuario\": \"{{nombreUsuarioAccesoNuevo}}\",\n  \"contrasena\": \"{{contrasenaAccesoNueva}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/usuarios-acceso/validar"
+          }
+        },
+        {
+          "name": "POST inicio-sesion admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreUsuario\": \"{{nombreUsuarioAccesoAdmin}}\",\n  \"contrasena\": \"{{contrasenaAccesoAdmin}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/inicios-sesion"
+          }
+        },
+        {
+          "name": "POST inicio-sesion nuevo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreUsuario\": \"{{nombreUsuarioAccesoNuevo}}\",\n  \"contrasena\": \"{{contrasenaAccesoNueva}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/inicios-sesion"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Logs de Errores",
+      "item": [
+        {
+          "name": "GET logs-errores",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/logs-errores"
+          }
+        },
+        {
+          "name": "POST log-error",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dominio\": \"frontend-web\",\n  \"origen\": \"checkout\",\n  \"metodo\": \"POST\",\n  \"codigo\": \"PAYMENT_TIMEOUT\",\n  \"mensaje\": \"No fue posible completar el cobro.\",\n  \"detalle\": \"La pasarela no respondio dentro del tiempo esperado.\",\n  \"contexto\": {\n    \"pedidoId\": 123,\n    \"traceId\": \"req-01HXYZ\"\n  },\n  \"fechaOcurrencia\": \"2026-04-05T18:45:12.000Z\"\n}"
+            },
+            "url": "{{baseUrl}}/api/logs-errores"
           }
         }
       ]

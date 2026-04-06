@@ -57,7 +57,7 @@ export class SiteApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = siteConfig.apiBaseUrl;
   private readonly productEndpoints: readonly string[] = [
-    `${this.baseUrl}/productos/activos`,
+    `${this.baseUrl}/productos/visibles`,
     `${this.baseUrl}/productos`
   ];
   private resolvedProductsEndpoint: string = this.productEndpoints[0];

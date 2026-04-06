@@ -41,7 +41,7 @@ describe('AppComponent', () => {
   });
 
   function flushProductsRequest(): void {
-    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/activos`);
+    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/visibles`);
 
     expect(request.request.method).toBe('GET');
 
@@ -289,7 +289,7 @@ describe('AppComponent', () => {
 
     fixture.detectChanges();
 
-    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/activos`);
+    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/visibles`);
     expect(request.request.method).toBe('GET');
 
     request.error(new ProgressEvent('error'), {
@@ -309,8 +309,8 @@ describe('AppComponent', () => {
 
     fixture.detectChanges();
 
-    const activeRequest = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/activos`);
-    activeRequest.flush({}, {
+    const visibleRequest = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/visibles`);
+    visibleRequest.flush({}, {
       status: 404,
       statusText: 'Not Found'
     });
@@ -323,18 +323,18 @@ describe('AppComponent', () => {
 
     expect(app.apiConnectionDiagnostic.status).toBe('error');
     expect(app.apiConnectionDiagnostic.title).toContain('Endpoint no encontrado');
-    expect(app.apiConnectionDiagnostic.details.some((detail) => detail.includes('/productos/activos'))).toBeTrue();
+    expect(app.apiConnectionDiagnostic.details.some((detail) => detail.includes('/productos/visibles'))).toBeTrue();
     expect(app.apiConnectionDiagnostic.details.some((detail) => detail.includes('/productos'))).toBeTrue();
   });
 
-  it('should fallback to the generic products endpoint when activos returns 404', () => {
+  it('should fallback to the generic products endpoint when visibles returns 404', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
 
     fixture.detectChanges();
 
-    const activeRequest = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/activos`);
-    activeRequest.flush({}, {
+    const visibleRequest = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/visibles`);
+    visibleRequest.flush({}, {
       status: 404,
       statusText: 'Not Found'
     });
@@ -366,7 +366,7 @@ describe('AppComponent', () => {
 
     fixture.detectChanges();
 
-      const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/activos`);
+      const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/visibles`);
     expect(request.request.method).toBe('GET');
 
     request.flush({
