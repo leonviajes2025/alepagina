@@ -1,6 +1,6 @@
 export const contenidoSeccionServicios = {
   sobretitulo: 'Servicios',
-  titulo: 'Atendemos desde regalos por pieza hasta producciones para eventos con ritmo y orden.',
+  titulo: 'Atendemos desde regalos por pieza hasta producciones para eventos.',
   servicios: [
     {
       titulo: 'Venta por pieza',
@@ -8,8 +8,9 @@ export const contenidoSeccionServicios = {
       descripcion: 'Bolsas individuales listas para regalar, vender o acompañar una mesa de postres.',
       detalles: [
         'Sabores de temporada y clásicos',
-        'Presentación individual premium',
-        'Pedidos desde 6 piezas'
+        'Presentación individual personalizada',
+        'Arma tu pedido a tu medida'
+        ,
       ]
     },
     {
@@ -19,7 +20,8 @@ export const contenidoSeccionServicios = {
       detalles: [
         'Descuento por volumen',
         'Etiquetado personalizado',
-        'Opción con entrega a domicilio'
+        'Opción con entrega a domicilio (dependiendo de la ubicación)',
+        'Envío a todo el país (con costo adicional)'
       ]
     }
   ]

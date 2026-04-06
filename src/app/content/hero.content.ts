@@ -30,7 +30,7 @@ export const contenidoHero = {
   vitrina: {
     etiquetaDestacada: 'Colmena favorita',
     tituloDato: 'Desde 50 piezas',
-    descripcionDato: 'Formato intuitivo para pedidos móviles',
+    descripcionDato: 'Pedidos móviles rápidos e intuitivos para eventos y compra individual',
     tituloNota: 'Miel, maíz y color limpio',
     descripcionNota: 'Visual premium que transmite frescura'
   }

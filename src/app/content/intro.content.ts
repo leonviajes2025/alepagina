@@ -1,3 +1,3 @@
 export const contenidoIntroduccion = {
-  descripcion: 'Un recorrido corto, claro y mobile-first: primero entiendes la propuesta, luego ves sabores, después cotizas y finalmente contactas sin fricción.'
+  descripcion: 'Descubre nuestra propuesta de palomitas, elige sabores, solicita tu cotización y contacta fácilmente.'
 } as const;

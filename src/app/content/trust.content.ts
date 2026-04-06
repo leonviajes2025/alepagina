@@ -1,6 +1,6 @@
 export const contenidoSeccionConfianza = {
   sobretitulo: 'Calidad, confianza y frescura',
-  titulo: 'La página comunica una marca cuidadosa, ágil y lista para responder bien en cualquier pantalla.',
+  titulo: 'Marca cuidada y ágil, lista para atender pedidos de palomitas en cualquier pantalla.',
   pilares: [
     {
       titulo: 'Calidad artesanal',
