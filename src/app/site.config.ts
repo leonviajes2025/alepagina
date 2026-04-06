@@ -18,8 +18,8 @@ export type SiteThemeConfig = {
 
 export const siteConfig = {
   companyName: 'Bee Palomitas',
-  contactName: 'Alejandrina Castro',
-  contactEmail: 'hola@nubemaizgourmet.mx',
+  contactName: 'Alejandrina',
+  contactEmail: 'beepalomitas@gmail.com',
   whatsappNumber: '5569852630',
   apiBaseUrl: environment.apiBaseUrl,
   apiDiagnosticsEnabled: environment.apiDiagnosticsEnabled,

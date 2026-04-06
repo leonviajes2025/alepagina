@@ -409,7 +409,7 @@ html[data-theme='oscuro'] app-root .contact-form textarea::placeholder,
 html[data-theme='oscuro'] app-root .quote-form input[type='text']::placeholder,
 html[data-theme='oscuro'] app-root .quote-form input[type='date']::placeholder,
 html[data-theme='oscuro'] app-root .quote-form input[type='number']::placeholder {
-	color: rgba(236, 209, 176, 0.54);
+	color: rgba(236, 209, 176, 0.36) !important;
 }
 
 html[data-theme='oscuro'] app-root .contact-form input:focus,
@@ -440,13 +440,13 @@ html[data-theme='oscuro'] app-root .quote-contact-field input[type='date']:focus
 
 html[data-theme='oscuro'] app-root .quote-contact-field input[type='text']::placeholder,
 html[data-theme='oscuro'] app-root .quote-contact-field input[type='date']::placeholder {
-	color: rgba(236, 209, 176, 0.54);
+	color: rgba(236, 209, 176, 0.36) !important;
 }
 
 html[data-theme='oscuro'] app-root .contact-form input::placeholder,
 html[data-theme='oscuro'] app-root .contact-form textarea::placeholder,
 html[data-theme='oscuro'] app-root .quote-form input::placeholder {
-	color: rgba(241, 213, 183, 0.72) !important;
+	color: rgba(241, 213, 183, 0.36) !important;
 }
 
 html[data-theme='oscuro'] app-root input[name='quoteCustomerName']::placeholder {
@@ -463,6 +463,40 @@ html[data-theme='oscuro'] app-root input[type='date']::-webkit-date-and-time-val
 html[data-theme='oscuro'] app-root input[type='date']::-webkit-calendar-picker-indicator {
 	filter: invert(0.95) sepia(0.22) saturate(0.6) hue-rotate(330deg);
 	opacity: 0.92;
+}
+
+/* Ensure vendor-prefixed placeholder rules and text-fill override component scope */
+html[data-theme='oscuro'] app-root .contact-form input::-webkit-input-placeholder,
+html[data-theme='oscuro'] app-root .contact-form textarea::-webkit-input-placeholder,
+html[data-theme='oscuro'] app-root .quote-form input[type='text']::-webkit-input-placeholder,
+html[data-theme='oscuro'] app-root .quote-form input[type='date']::-webkit-input-placeholder,
+html[data-theme='oscuro'] app-root .quote-form input[type='number']::-webkit-input-placeholder,
+html[data-theme='oscuro'] app-root .quote-contact-field input[type='text']::-webkit-input-placeholder,
+html[data-theme='oscuro'] app-root .quote-contact-field input[type='date']::-webkit-input-placeholder,
+html[data-theme='oscuro'] app-root .contact-form input::-moz-placeholder,
+html[data-theme='oscuro'] app-root .contact-form textarea::-moz-placeholder,
+html[data-theme='oscuro'] app-root .quote-form input::-moz-placeholder,
+html[data-theme='oscuro'] app-root .quote-contact-field input::-moz-placeholder,
+html[data-theme='oscuro'] app-root .contact-form input:-ms-input-placeholder,
+html[data-theme='oscuro'] app-root .contact-form textarea:-ms-input-placeholder,
+html[data-theme='oscuro'] app-root .quote-form input:-ms-input-placeholder,
+html[data-theme='oscuro'] app-root .quote-contact-field input:-ms-input-placeholder,
+html[data-theme='oscuro'] app-root .contact-form input::-ms-input-placeholder,
+html[data-theme='oscuro'] app-root .contact-form textarea::-ms-input-placeholder,
+html[data-theme='oscuro'] app-root .quote-form input::-ms-input-placeholder,
+html[data-theme='oscuro'] app-root .quote-contact-field input::-ms-input-placeholder {
+	color: rgba(236, 209, 176, 0.28) !important;
+	-webkit-text-fill-color: rgba(236, 209, 176, 0.28) !important;
+	opacity: 1 !important;
+}
+
+/* High-specificity fallbacks for contact form fields */
+html[data-theme='oscuro'] app-root .contact-form input[name='contactName']::placeholder,
+html[data-theme='oscuro'] app-root .contact-form input[name='contactEmail']::placeholder,
+html[data-theme='oscuro'] app-root .contact-form input[name='contactPhone']::placeholder,
+html[data-theme='oscuro'] app-root .contact-form textarea[name='contactQuestion']::placeholder {
+	color: rgba(236, 209, 176, 0.28) !important;
+	-webkit-text-fill-color: rgba(236, 209, 176, 0.28) !important;
 }
 
 html[data-theme='oscuro'] app-root .quote-total {
