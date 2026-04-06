@@ -1,4 +1,4 @@
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, DOCUMENT } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +12,7 @@ import { contenidoSeccionCotizacion } from './content/quote.content';
 import { contenidoSeccionServicios } from './content/services.content';
 import { contenidoSeccionConfianza } from './content/trust.content';
 import { SiteApiService, type ApiProductDto, type ContactLeadRequest, type QuoteDetailRequest } from './site-api.service';
-import { siteConfig, type ProductCategory, type ProductConfig } from './site.config';
+import { siteConfig, type ProductCategory, type ProductConfig, type SiteThemeName } from './site.config';
 
 type Product = {
   id?: number;
@@ -54,6 +54,7 @@ type ContactFormModel = {
 })
 export class AppComponent implements OnInit {
   private readonly api = inject(SiteApiService);
+  private readonly document = inject(DOCUMENT);
   private readonly blockedQuoteKeys = new Set(['-', '+', 'e', 'E', '.', ',']);
   private readonly quoteDateFormatter = new Intl.DateTimeFormat('es-MX', {
     day: '2-digit',
@@ -62,6 +63,7 @@ export class AppComponent implements OnInit {
   });
 
   readonly config = siteConfig;
+  readonly themes = this.config.theme.themes;
   readonly navegacion = contenidoNavegacion;
   readonly seccionHero = contenidoHero;
   readonly seccionIntroduccion = contenidoIntroduccion;
@@ -124,8 +126,26 @@ export class AppComponent implements OnInit {
 
   mobileMenuOpen = false;
 
+  currentTheme: SiteThemeName = this.config.theme.defaultTheme;
+
+  constructor() {
+    this.applyTheme(this.currentTheme);
+  }
+
   ngOnInit(): void {
     this.loadProducts();
+  }
+
+  get currentThemeLabel(): string {
+    return this.themes[this.currentTheme].label;
+  }
+
+  get nextTheme(): SiteThemeName {
+    return this.currentTheme === 'oscuro' ? 'clasico' : 'oscuro';
+  }
+
+  get themeToggleAriaLabel(): string {
+    return `Cambiar al tema ${this.themes[this.nextTheme].label.toLowerCase()}`;
   }
 
   get featuredProduct(): Product {
@@ -270,8 +290,17 @@ export class AppComponent implements OnInit {
     this.mobileMenuOpen = !this.mobileMenuOpen;
   }
 
+  toggleTheme(): void {
+    this.setTheme(this.nextTheme);
+  }
+
   closeMobileMenu(): void {
     this.mobileMenuOpen = false;
+  }
+
+  setTheme(theme: SiteThemeName): void {
+    this.currentTheme = theme;
+    this.applyTheme(theme);
   }
 
   getCatalogPrice(category: ProductCategory): number {
@@ -487,6 +516,13 @@ export class AppComponent implements OnInit {
 
   private buildWhatsappLink(message: string): string {
     return `https://wa.me/${this.contact.whatsappNumber}?text=${encodeURIComponent(message)}`;
+  }
+
+  private applyTheme(theme: SiteThemeName): void {
+    const root = this.document.documentElement;
+
+    root.setAttribute('data-theme', theme);
+    root.style.colorScheme = theme === 'oscuro' ? 'dark' : 'light';
   }
 
   private loadProducts(): void {

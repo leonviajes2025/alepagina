@@ -36,6 +36,8 @@ describe('AppComponent', () => {
 
   afterEach(() => {
     httpTestingController.verify();
+    document.documentElement.removeAttribute('data-theme');
+    document.documentElement.style.colorScheme = '';
   });
 
   function flushProductsRequest(): void {
@@ -77,6 +79,15 @@ describe('AppComponent', () => {
     expect(app.brand).toEqual(siteConfig.companyName);
   });
 
+  it('should apply the configured default theme', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    expect(app.currentTheme).toBe(siteConfig.theme.defaultTheme);
+    expect(document.documentElement.getAttribute('data-theme')).toBe(siteConfig.theme.defaultTheme);
+    expect(document.documentElement.style.colorScheme).toBe('dark');
+  });
+
   it('should render the hero headline', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
@@ -97,6 +108,33 @@ describe('AppComponent', () => {
 
     app.closeMobileMenu();
     expect(app.mobileMenuOpen).toBeFalse();
+  });
+
+  it('should toggle the active theme from the header control', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    expect(app.currentTheme).toBe('oscuro');
+
+    app.toggleTheme();
+    expect(app.currentTheme).toBe('clasico');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('clasico');
+    expect(document.documentElement.style.colorScheme).toBe('light');
+
+    app.toggleTheme();
+    expect(app.currentTheme).toBe('oscuro');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('oscuro');
+  });
+
+  it('should render the theme toggle with the current theme label', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+
+    fixture.detectChanges();
+    flushProductsRequest();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.theme-toggle-copy strong')?.textContent).toContain('Oscuro');
   });
 
   it('should compute config-based prices for product categories', () => {

@@ -3,6 +3,48 @@
 :root {
 	--font-display: 'Fraunces', Georgia, serif;
 	--font-body: 'Manrope', 'Segoe UI', sans-serif;
+	--ink-900: #f7ead9;
+	--ink-800: #ecd1b0;
+	--ink-700: #d5b08e;
+	--ink-600: #ab8568;
+	--gold-400: #f2bc49;
+	--caramel-500: #cf6a2f;
+	--caramel-600: #b75521;
+	--caramel-700: #f1aa74;
+	--berry-500: #8d5039;
+	--cream-50: #1f1418;
+	--page-background:
+		radial-gradient(circle at top left, rgba(255, 184, 76, 0.16), transparent 28%),
+		radial-gradient(circle at 82% 12%, rgba(255, 214, 122, 0.1), transparent 24%),
+		linear-gradient(180deg, #120b10 0%, #1b1218 45%, #25181d 100%);
+	--body-color: var(--ink-900);
+	--header-background: rgba(28, 19, 24, 0.8);
+	--header-border: rgba(255, 227, 192, 0.08);
+	--surface-1: rgba(37, 25, 31, 0.84);
+	--surface-2: rgba(49, 34, 40, 0.88);
+	--surface-3: rgba(62, 44, 50, 0.92);
+	--surface-4: rgba(255, 255, 255, 0.06);
+	--card-border: rgba(255, 227, 192, 0.12);
+	--card-shadow: 0 1.25rem 2.8rem rgba(0, 0, 0, 0.28);
+	--field-background: linear-gradient(180deg, rgba(52, 36, 43, 0.98), rgba(38, 26, 33, 0.96));
+	--field-border: rgba(255, 227, 192, 0.14);
+	--field-focus-border: rgba(242, 188, 73, 0.48);
+	--field-focus-ring: rgba(242, 188, 73, 0.18);
+	--badge-background: rgba(242, 188, 73, 0.14);
+	--badge-strong-background: rgba(242, 188, 73, 0.2);
+	--theme-toggle-background: rgba(255, 255, 255, 0.05);
+	--theme-toggle-border: rgba(255, 227, 192, 0.12);
+	--theme-toggle-shadow: none;
+	--status-info-bg: rgba(97, 72, 38, 0.34);
+	--status-warning-bg: rgba(129, 72, 41, 0.3);
+	--status-success-bg: rgba(28, 88, 62, 0.34);
+	--status-success-text: #bde7d0;
+	--status-error-bg: rgba(124, 47, 44, 0.34);
+	--status-error-text: #ffc9c1;
+	color-scheme: dark;
+}
+
+html[data-theme='clasico'] {
 	--ink-900: #26140b;
 	--ink-800: #4f2b16;
 	--ink-700: #69402c;
@@ -13,6 +55,35 @@
 	--caramel-700: #8d4319;
 	--berry-500: #8d5039;
 	--cream-50: #f9f0de;
+	--page-background:
+		radial-gradient(circle at top left, rgba(255, 214, 122, 0.34), transparent 30%),
+		radial-gradient(circle at 85% 10%, rgba(255, 244, 205, 0.8), transparent 22%),
+		linear-gradient(180deg, #fffaf0 0%, var(--cream-50) 48%, #f0dfbf 100%);
+	--body-color: var(--ink-900);
+	--header-background: rgba(255, 248, 233, 0.82);
+	--header-border: rgba(86, 45, 18, 0.08);
+	--surface-1: rgba(255, 250, 244, 0.8);
+	--surface-2: rgba(255, 248, 238, 0.86);
+	--surface-3: rgba(255, 255, 255, 0.7);
+	--surface-4: rgba(255, 255, 255, 0.62);
+	--card-border: rgba(97, 45, 16, 0.08);
+	--card-shadow: 0 1.25rem 2.8rem rgba(99, 50, 21, 0.1);
+	--field-background: #fffdfa;
+	--field-border: rgba(97, 45, 16, 0.12);
+	--field-focus-border: rgba(184, 97, 43, 0.48);
+	--field-focus-ring: rgba(255, 213, 150, 0.35);
+	--badge-background: rgba(255, 233, 208, 0.78);
+	--badge-strong-background: rgba(255, 214, 116, 0.3);
+	--theme-toggle-background: rgba(255, 255, 255, 0.68);
+	--theme-toggle-border: rgba(86, 45, 18, 0.12);
+	--theme-toggle-shadow: 0 1rem 2rem rgba(99, 50, 21, 0.08);
+	--status-info-bg: rgba(255, 249, 232, 0.94);
+	--status-warning-bg: rgba(255, 238, 214, 0.92);
+	--status-success-bg: rgba(226, 248, 236, 0.95);
+	--status-success-text: #14633d;
+	--status-error-bg: rgba(255, 228, 223, 0.95);
+	--status-error-text: #8d2d20;
+	color-scheme: light;
 }
 
 html {
@@ -23,11 +94,9 @@ body {
 	margin: 0;
 	min-width: 320px;
 	font-family: var(--font-body);
-	color: var(--ink-900);
-	background:
-		radial-gradient(circle at top left, rgba(255, 214, 122, 0.34), transparent 30%),
-		radial-gradient(circle at 85% 10%, rgba(255, 244, 205, 0.8), transparent 22%),
-		linear-gradient(180deg, #fffaf0 0%, var(--cream-50) 48%, #f0dfbf 100%);
+	color: var(--body-color);
+	background: var(--page-background);
+	transition: background 220ms ease, color 220ms ease;
 }
 
 * {

@@ -2,11 +2,17 @@ import { environment } from '../environments/environment';
 
 export type ProductCategory = 'dulce' | 'salada';
 
+export type SiteThemeName = 'clasico' | 'oscuro';
+
 export type ProductConfig = {
   flavor: string;
   category: ProductCategory;
   description: string;
   image: string;
+};
+
+export type SiteThemeConfig = {
+  label: string;
 };
 
 export const siteConfig = {
@@ -16,6 +22,17 @@ export const siteConfig = {
   whatsappNumber: '5569852630',
   apiBaseUrl: environment.apiBaseUrl,
   apiDiagnosticsEnabled: environment.apiDiagnosticsEnabled,
+  theme: {
+    defaultTheme: 'oscuro',
+    themes: {
+      clasico: {
+        label: 'Clasico'
+      },
+      oscuro: {
+        label: 'Oscuro'
+      }
+    } satisfies Record<SiteThemeName, SiteThemeConfig>
+  },
   productPrices: {
     salty: 30,
     sweet: 35
