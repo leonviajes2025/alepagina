@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { finalize, forkJoin, of, switchMap, throwError } from 'rxjs';
 import { contenidoSeccionContacto } from './content/contact.content';
 import { contenidoHero } from './content/hero.content';
-import { contenidoIntroduccion } from './content/intro.content';
 import { contenidoNavegacion } from './content/navigation.content';
 import { contenidoSeccionProductos } from './content/products.content';
 import { contenidoSeccionCotizacion } from './content/quote.content';
@@ -70,7 +69,6 @@ export class AppComponent implements OnInit {
   readonly themes = this.config.theme.themes;
   readonly navegacion = contenidoNavegacion;
   readonly seccionHero = contenidoHero;
-  readonly seccionIntroduccion = contenidoIntroduccion;
   readonly seccionConfianza = contenidoSeccionConfianza;
   readonly seccionProductos = contenidoSeccionProductos;
   readonly seccionServicios = contenidoSeccionServicios;
