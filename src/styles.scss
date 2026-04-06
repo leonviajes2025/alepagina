@@ -277,6 +277,8 @@ html[data-theme='oscuro'] app-root .quote-group-label,
 html[data-theme='oscuro'] app-root .quote-flavor-category,
 html[data-theme='oscuro'] app-root .product-category,
 html[data-theme='oscuro'] app-root .hero-points span {
+	background: #6d4023 !important;
+	border-color: rgba(255, 221, 188, 0.18) !important;
 	box-shadow: inset 0 1px 0 rgba(255, 244, 230, 0.06);
 }
 
@@ -355,6 +357,8 @@ html[data-theme='oscuro'] app-root .contact-form textarea,
 html[data-theme='oscuro'] app-root .quote-form input[type='text'],
 html[data-theme='oscuro'] app-root .quote-form input[type='date'],
 html[data-theme='oscuro'] app-root .quote-form input[type='number'] {
+	background: #181116 !important;
+	border-color: rgba(255, 226, 191, 0.16) !important;
 	box-shadow: inset 0 1px 0 rgba(255, 244, 230, 0.04);
 }
 
@@ -366,7 +370,7 @@ html[data-theme='oscuro'] app-root .quote-contact-field,
 html[data-theme='oscuro'] app-root .quote-summary strong,
 html[data-theme='oscuro'] app-root .quote-selection ul,
 html[data-theme='oscuro'] app-root .quote-flavor-card strong {
-	color: var(--ink-900);
+	color: #fff4e8 !important;
 }
 
 html[data-theme='oscuro'] app-root .trust-card p,
@@ -374,11 +378,18 @@ html[data-theme='oscuro'] app-root .quote-selection p,
 html[data-theme='oscuro'] app-root .quote-flavor-card small,
 html[data-theme='oscuro'] app-root .quote-summary span,
 html[data-theme='oscuro'] app-root .theme-toggle-copy small {
-	color: var(--ink-800);
+	color: #f1d5b7 !important;
 }
 
 html[data-theme='oscuro'] app-root .quote-contact-field span {
 	color: #ffd3ac;
+}
+
+html[data-theme='oscuro'] app-root .contact-form label > span,
+html[data-theme='oscuro'] app-root .quote-form > .checkbox-row span,
+html[data-theme='oscuro'] app-root .quote-whatsapp-action > span,
+html[data-theme='oscuro'] app-root .contact-label {
+	color: #f1d5b7 !important;
 }
 
 html[data-theme='oscuro'] app-root .contact-form input,
@@ -388,8 +399,9 @@ html[data-theme='oscuro'] app-root .quote-form input[type='date'],
 html[data-theme='oscuro'] app-root .quote-form input[type='number'] {
 	background: var(--field-background);
 	border-color: var(--field-border);
-	color: var(--ink-900);
+	color: #fff4e8 !important;
 	caret-color: var(--ink-900);
+	-webkit-text-fill-color: #fff4e8;
 }
 
 html[data-theme='oscuro'] app-root .contact-form input::placeholder,
@@ -431,6 +443,28 @@ html[data-theme='oscuro'] app-root .quote-contact-field input[type='date']::plac
 	color: rgba(236, 209, 176, 0.54);
 }
 
+html[data-theme='oscuro'] app-root .contact-form input::placeholder,
+html[data-theme='oscuro'] app-root .contact-form textarea::placeholder,
+html[data-theme='oscuro'] app-root .quote-form input::placeholder {
+	color: rgba(241, 213, 183, 0.72) !important;
+}
+
+html[data-theme='oscuro'] app-root input[name='quoteCustomerName']::placeholder {
+	color: #ffe6cc !important;
+	opacity: 1;
+	-webkit-text-fill-color: #ffe6cc;
+}
+
+html[data-theme='oscuro'] app-root input[type='date']::-webkit-datetime-edit,
+html[data-theme='oscuro'] app-root input[type='date']::-webkit-date-and-time-value {
+	color: #fff4e8;
+}
+
+html[data-theme='oscuro'] app-root input[type='date']::-webkit-calendar-picker-indicator {
+	filter: invert(0.95) sepia(0.22) saturate(0.6) hue-rotate(330deg);
+	opacity: 0.92;
+}
+
 html[data-theme='oscuro'] app-root .quote-total {
 	background: linear-gradient(135deg, rgba(203, 109, 55, 0.84), rgba(112, 64, 58, 0.82));
 }
@@ -439,6 +473,17 @@ html[data-theme='oscuro'] app-root .quote-total strong,
 html[data-theme='oscuro'] app-root .quote-total span,
 html[data-theme='oscuro'] app-root .quote-total p {
 	color: #fff5ea;
+}
+
+html[data-theme='oscuro'] app-root .quote-summary > div,
+html[data-theme='oscuro'] app-root .quote-whatsapp-action,
+html[data-theme='oscuro'] app-root .quote-group-card,
+html[data-theme='oscuro'] app-root .quote-flavor-card {
+	background: #1c1318 !important;
+}
+
+html[data-theme='oscuro'] app-root .service-card li {
+	background: #24181d !important;
 }
 
 html[data-theme='oscuro'] app-root .status-banner-info {
