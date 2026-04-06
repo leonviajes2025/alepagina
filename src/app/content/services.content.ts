@@ -20,8 +20,7 @@ export const contenidoSeccionServicios = {
       detalles: [
         'Descuento por volumen',
         'Etiquetado personalizado',
-        'Opción con entrega a domicilio (dependiendo de la ubicación)',
-        'Envío a todo el país (con costo adicional)'
+        'Opción con entrega a domicilio (dependiendo de la ubicación)'
       ]
     }
   ]

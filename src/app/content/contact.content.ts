@@ -15,12 +15,12 @@ export const contenidoSeccionContacto = {
     titulo: 'Regístrate y te contactamos para ayudarte con tu pedido.',
     campos: {
       etiquetaNombre: 'Nombre',
-      placeholderNombre: 'Tu nombre completo',
+      placeholderNombre: 'Tu nombre',
       etiquetaCorreo: 'Correo electrónico',
       placeholderCorreo: 'correo@ejemplo.com',
-      etiquetaTelefono: 'Teléfono',
-      placeholderTelefono: '5512345678',
-      etiquetaPregunta: 'Pregunta opcional',
+      etiquetaTelefono: 'Teléfono (opcional)',
+      placeholderTelefono: 'Tu número de teléfono',
+      etiquetaPregunta: 'Pregunta (opcional)',
       placeholderPregunta: 'Cuéntanos qué necesitas y te responderemos',
       etiquetaPromociones: 'Quiero recibir promociones y novedades'
     },

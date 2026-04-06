@@ -1,6 +1,6 @@
 export const contenidoSeccionProductos = {
   sobretitulo: 'Productos',
-  titulo: 'Sabores que conectan con una imagen fresca y una presentación con nivel boutique.',
+  titulo: 'Sabores que conectan con una imagen fresca y una presentación especial.',
   descripcionPrecios: 'Cada sabor muestra su precio por pieza y la cotización calcula el total con el precio individual de cada producto.',
   mensajeCarga: 'Cargando productos desde la API...',
   mensajeProductosInvalidos: 'La API no devolvió productos válidos. Se muestra el catálogo base.',

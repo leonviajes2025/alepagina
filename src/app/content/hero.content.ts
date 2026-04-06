@@ -1,6 +1,6 @@
 export const contenidoHero = {
   sobretitulo: 'Inspirado en abejas, miel y palomitas recién hechas',
-  titulo: 'Palomitas gourmet con imagen fresca, sabor confiable y acabado premium.',
+  titulo: 'Palomitas gourmet frescas y premium.',
   descripcion: 'Diseñamos pedidos que se sienten cuidados desde la primera vista: mezcla artesanal, presentación limpia y una experiencia clara para cotizar rápido desde el celular.',
   accionPrincipal: {
     etiqueta: 'Cotiza tu evento',
