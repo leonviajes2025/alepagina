@@ -20,18 +20,18 @@
 	--body-color: var(--ink-900);
 	--header-background: rgba(28, 19, 24, 0.8);
 	--header-border: rgba(255, 227, 192, 0.08);
-	--surface-1: rgba(37, 25, 31, 0.84);
-	--surface-2: rgba(49, 34, 40, 0.88);
-	--surface-3: rgba(62, 44, 50, 0.92);
+	--surface-1: rgba(24, 16, 21, 0.92);
+	--surface-2: rgba(31, 21, 27, 0.94);
+	--surface-3: rgba(39, 27, 33, 0.96);
 	--surface-4: rgba(255, 255, 255, 0.06);
 	--card-border: rgba(255, 227, 192, 0.12);
 	--card-shadow: 0 1.25rem 2.8rem rgba(0, 0, 0, 0.28);
-	--field-background: linear-gradient(180deg, rgba(52, 36, 43, 0.98), rgba(38, 26, 33, 0.96));
+	--field-background: linear-gradient(180deg, rgba(34, 24, 29, 0.98), rgba(24, 16, 21, 0.98));
 	--field-border: rgba(255, 227, 192, 0.14);
 	--field-focus-border: rgba(242, 188, 73, 0.48);
 	--field-focus-ring: rgba(242, 188, 73, 0.18);
-	--badge-background: rgba(242, 188, 73, 0.14);
-	--badge-strong-background: rgba(242, 188, 73, 0.2);
+	--badge-background: rgba(136, 84, 45, 0.56);
+	--badge-strong-background: rgba(160, 96, 46, 0.68);
 	--theme-toggle-background: rgba(255, 255, 255, 0.05);
 	--theme-toggle-border: rgba(255, 227, 192, 0.12);
 	--theme-toggle-shadow: none;
@@ -267,8 +267,17 @@ html[data-theme='oscuro'] app-root .quote-flavor-category,
 html[data-theme='oscuro'] app-root .product-category,
 html[data-theme='oscuro'] app-root .trust-accent {
 	background: var(--badge-background);
-	color: var(--caramel-700);
+	color: #fff2e3;
 	border-color: var(--card-border);
+}
+
+html[data-theme='oscuro'] app-root .service-badge,
+html[data-theme='oscuro'] app-root .trust-accent,
+html[data-theme='oscuro'] app-root .quote-group-label,
+html[data-theme='oscuro'] app-root .quote-flavor-category,
+html[data-theme='oscuro'] app-root .product-category,
+html[data-theme='oscuro'] app-root .hero-points span {
+	box-shadow: inset 0 1px 0 rgba(255, 244, 230, 0.06);
 }
 
 html[data-theme='oscuro'] app-root .menu-toggle {
@@ -335,6 +344,43 @@ html[data-theme='oscuro'] app-root .quote-flavor-card {
 	background: var(--surface-3);
 }
 
+html[data-theme='oscuro'] app-root .quote-group-card,
+html[data-theme='oscuro'] app-root .quote-summary > div,
+html[data-theme='oscuro'] app-root .quote-whatsapp-action,
+html[data-theme='oscuro'] app-root .quote-flavor-card,
+html[data-theme='oscuro'] app-root .quote-contact-field input[type='text'],
+html[data-theme='oscuro'] app-root .quote-contact-field input[type='date'],
+html[data-theme='oscuro'] app-root .contact-form input,
+html[data-theme='oscuro'] app-root .contact-form textarea,
+html[data-theme='oscuro'] app-root .quote-form input[type='text'],
+html[data-theme='oscuro'] app-root .quote-form input[type='date'],
+html[data-theme='oscuro'] app-root .quote-form input[type='number'] {
+	box-shadow: inset 0 1px 0 rgba(255, 244, 230, 0.04);
+}
+
+html[data-theme='oscuro'] app-root .trust-card h3,
+html[data-theme='oscuro'] app-root .service-card li,
+html[data-theme='oscuro'] app-root .contact-form label,
+html[data-theme='oscuro'] app-root .quote-form label,
+html[data-theme='oscuro'] app-root .quote-contact-field,
+html[data-theme='oscuro'] app-root .quote-summary strong,
+html[data-theme='oscuro'] app-root .quote-selection ul,
+html[data-theme='oscuro'] app-root .quote-flavor-card strong {
+	color: var(--ink-900);
+}
+
+html[data-theme='oscuro'] app-root .trust-card p,
+html[data-theme='oscuro'] app-root .quote-selection p,
+html[data-theme='oscuro'] app-root .quote-flavor-card small,
+html[data-theme='oscuro'] app-root .quote-summary span,
+html[data-theme='oscuro'] app-root .theme-toggle-copy small {
+	color: var(--ink-800);
+}
+
+html[data-theme='oscuro'] app-root .quote-contact-field span {
+	color: #ffd3ac;
+}
+
 html[data-theme='oscuro'] app-root .contact-form input,
 html[data-theme='oscuro'] app-root .contact-form textarea,
 html[data-theme='oscuro'] app-root .quote-form input[type='text'],
@@ -343,6 +389,7 @@ html[data-theme='oscuro'] app-root .quote-form input[type='number'] {
 	background: var(--field-background);
 	border-color: var(--field-border);
 	color: var(--ink-900);
+	caret-color: var(--ink-900);
 }
 
 html[data-theme='oscuro'] app-root .contact-form input::placeholder,
@@ -376,7 +423,7 @@ html[data-theme='oscuro'] app-root .quote-contact-field input[type='date']:focus
 	box-shadow:
 		inset 0 1px 0 rgba(255, 255, 255, 0.04),
 		0 0 0 4px var(--field-focus-ring);
-	background: linear-gradient(180deg, rgba(60, 42, 49, 1), rgba(44, 30, 37, 0.96));
+	background: linear-gradient(180deg, rgba(44, 31, 37, 1), rgba(28, 19, 24, 0.98));
 }
 
 html[data-theme='oscuro'] app-root .quote-contact-field input[type='text']::placeholder,
@@ -386,6 +433,12 @@ html[data-theme='oscuro'] app-root .quote-contact-field input[type='date']::plac
 
 html[data-theme='oscuro'] app-root .quote-total {
 	background: linear-gradient(135deg, rgba(203, 109, 55, 0.84), rgba(112, 64, 58, 0.82));
+}
+
+html[data-theme='oscuro'] app-root .quote-total strong,
+html[data-theme='oscuro'] app-root .quote-total span,
+html[data-theme='oscuro'] app-root .quote-total p {
+	color: #fff5ea;
 }
 
 html[data-theme='oscuro'] app-root .status-banner-info {
