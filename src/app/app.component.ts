@@ -737,27 +737,27 @@ export class AppComponent implements OnInit {
   }
 
   private isApiProductActive(product: ApiProductDto): boolean {
-    return product.activo !== false && product.active !== false && product.disponible !== false;
+    return product.activo !== false && product.visible !== false;
   }
 
   private resolveFlavor(product: ApiProductDto): string {
-    return this.readFirstString(product.nombre, product.name, product.flavor, product.titulo);
+    return this.readFirstString(product.nombre);
   }
 
   private resolveRawCategory(product: ApiProductDto): string {
-    return this.readFirstString(product.categoria, product.category, product.tipo);
+    return this.readFirstString(product.categoria);
   }
 
   private resolveDescription(product: ApiProductDto): string {
-    return this.readFirstString(product.descripcion, product.description, product.detalle);
+    return this.readFirstString(product.descripcion);
   }
 
   private resolveRawImage(product: ApiProductDto): string {
-    return this.readFirstString(product.imagenUrl, product.imageUrl, product.image, product.imagen);
+    return this.readFirstString(product.imagenUrl);
   }
 
   private resolveRawPrice(product: ApiProductDto): number | string | undefined {
-    return product.precio ?? product.price;
+    return product.precio;
   }
 
   private buildQuoteDetailPayloads(idPedido: number): QuoteDetailRequest[] {

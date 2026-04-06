@@ -6,24 +6,12 @@ import { siteConfig } from './site.config';
 export type ApiProductDto = {
   id?: number | string;
   nombre?: string;
-  name?: string;
-  flavor?: string;
-  titulo?: string;
   categoria?: string;
-  category?: string;
-  tipo?: string;
   descripcion?: string;
-  description?: string;
-  detalle?: string;
   precio?: number | string;
-  price?: number | string;
   imagenUrl?: string;
-  image?: string;
-  imageUrl?: string;
-  imagen?: string;
   activo?: boolean;
-  active?: boolean;
-  disponible?: boolean;
+  visible?: boolean;
 };
 
 export type ContactLeadRequest = {
@@ -166,15 +154,10 @@ export class SiteApiService {
 
     return [
       record['nombre'],
-      record['name'],
-      record['flavor'],
-      record['titulo'],
       record['categoria'],
-      record['category'],
       record['descripcion'],
-      record['description'],
       record['precio'],
-      record['price']
+      record['imagenUrl']
     ].some((candidate) => candidate !== undefined);
   }
 }

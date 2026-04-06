@@ -382,13 +382,13 @@ describe('AppComponent', () => {
     expect(app.apiConnectionDiagnostic.details.some((detail) => detail.includes('/productos'))).toBeTrue();
   });
 
-  it('should support wrapped product responses and alternate field names', () => {
+  it('should support wrapped product responses using the API product contract', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
 
     fixture.detectChanges();
 
-      const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/visibles`);
+    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/visibles`);
     expect(request.request.method).toBe('GET');
 
     request.flush({
@@ -396,20 +396,22 @@ describe('AppComponent', () => {
         rows: [
           {
             id: '25',
-            name: 'Chocolate oscuro',
-            category: 'sweet',
-            description: 'Producto remoto alterno',
-            price: '41.5',
-            image: 'products/chocolate-oscuro.svg',
-            active: true
+            nombre: 'Chocolate oscuro',
+            categoria: 'dulce',
+            descripcion: 'Producto remoto alterno',
+            precio: '41.5',
+            imagenUrl: 'products/chocolate-oscuro.svg',
+            activo: true,
+            visible: true
           },
           {
-            titulo: 'Producto oculto',
-            tipo: 'salada',
-            detalle: 'No deberia mostrarse',
+            nombre: 'Producto oculto',
+            categoria: 'salada',
+            descripcion: 'No deberia mostrarse',
             precio: 99,
-            imagen: 'products/queso-chipotle.svg',
-            disponible: false
+            imagenUrl: 'products/queso-chipotle.svg',
+            activo: true,
+            visible: false
           }
         ]
       }
@@ -421,6 +423,43 @@ describe('AppComponent', () => {
     expect(app.products[0].category).toBe('dulce');
     expect(app.products[0].price).toBe(41.5);
     expect(app.products[0].description).toBe('Producto remoto alterno');
+    expect(app.products[0].image).toBe('products/chocolate-oscuro.svg');
+  });
+
+  it('should hide products marked as not visible by the API', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    fixture.detectChanges();
+
+    const request = httpTestingController.expectOne(`${siteConfig.apiBaseUrl}/productos/visibles`);
+    expect(request.request.method).toBe('GET');
+
+    request.flush([
+      {
+        id: 41,
+        nombre: 'Mix visible',
+        categoria: 'dulce',
+        descripcion: 'Producto que si debe mostrarse',
+        precio: 52,
+        imagenUrl: 'products/caramelo-clasico.svg',
+        activo: true,
+        visible: true
+      },
+      {
+        id: 42,
+        nombre: 'Mix oculto',
+        categoria: 'salada',
+        descripcion: 'Producto que no debe mostrarse',
+        precio: 44,
+        imagenUrl: 'products/queso-chipotle.svg',
+        activo: true,
+        visible: false
+      }
+    ]);
+
+    expect(app.products.length).toBe(1);
+    expect(app.products[0].flavor).toBe('Mix visible');
   });
 
   it('should map dulce/salada as a valid product category from the API', () => {
