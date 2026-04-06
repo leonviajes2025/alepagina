@@ -17,7 +17,7 @@ export type SiteThemeConfig = {
 };
 
 export const siteConfig = {
-  companyName: 'Bee',
+  companyName: 'Bee Palomitas',
   contactName: 'Alejandrina Castro',
   contactEmail: 'hola@nubemaizgourmet.mx',
   whatsappNumber: '5569852630',
