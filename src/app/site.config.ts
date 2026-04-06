@@ -20,7 +20,7 @@ export const siteConfig = {
   companyName: 'Bee Palomitas',
   contactName: 'Alejandrina',
   contactEmail: 'beepalomitas@gmail.com',
-  whatsappNumber: '5569852630',
+  whatsappNumber: environment.apiBaseUrl.startsWith('/') ? '5551078110' : '5569852630',
   apiBaseUrl: environment.apiBaseUrl,
   apiDiagnosticsEnabled: environment.apiDiagnosticsEnabled,
   theme: {

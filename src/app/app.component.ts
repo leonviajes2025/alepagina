@@ -536,23 +536,8 @@ export class AppComponent implements OnInit {
   }
 
   private openWhatsappMessage(message: string): void {
-    const appLink = this.buildWhatsappAppLink(message);
     const webLink = this.buildWhatsappLink(message);
-    const popup = window.open(appLink, '_blank');
-
-    if (!popup) {
-      window.open(webLink, '_blank', 'noopener');
-      return;
-    }
-
-    window.setTimeout(() => {
-      if (document.hidden) {
-        return;
-      }
-
-      popup.close();
-      window.open(webLink, '_blank', 'noopener');
-    }, 900);
+    window.open(webLink, '_blank', 'noopener');
   }
 
   private buildWhatsappAppLink(message: string): string {
