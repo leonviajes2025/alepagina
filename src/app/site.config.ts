@@ -20,11 +20,7 @@ export const siteConfig = {
   companyName: 'Bee Palomitas',
   contactName: 'Alejandrina',
   contactEmail: 'beepalomitas@gmail.com',
-  // Detect remote (production) API base URLs that start with http(s) or //;
-  // treat relative paths (starting with '/') as local/dev.
-  whatsappNumber: (/^https?:\/\//.test(environment.apiBaseUrl) || environment.apiBaseUrl.startsWith('//'))
-    ? '5569852630'
-    : '5551078110',
+  whatsappNumber: '5569852630',
   apiBaseUrl: environment.apiBaseUrl,
   apiDiagnosticsEnabled: environment.apiDiagnosticsEnabled,
   theme: {
