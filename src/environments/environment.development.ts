@@ -1,4 +1,4 @@
 export const environment = {
   apiBaseUrl: '/api',
-  apiDiagnosticsEnabled: true
+  apiDiagnosticsEnabled: false
 } as const;
