@@ -81,13 +81,13 @@
 	width: 2.6rem;
 	height: 2.6rem;
 	border-radius: 0.9rem;
-	background:
-		radial-gradient(circle at 30% 30%, rgba(255, 247, 211, 0.95), transparent 28%),
-		linear-gradient(135deg, var(--gold-400), var(--caramel-500));
-	color: #fff8f2;
+	background: #f7c948;
+	color: #101010;
 	box-shadow: 0 1rem 2rem rgba(157, 75, 24, 0.18);
 	font-family: var(--font-display);
-	font-size: 1.3rem;
+	font-size: 0.95rem;
+	font-weight: 800;
+	letter-spacing: 0.02em;
 }
 
 .menu-toggle {

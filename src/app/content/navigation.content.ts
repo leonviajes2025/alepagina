@@ -1,5 +1,5 @@
 export const contenidoNavegacion = {
-  lemaMarca: 'Palomitas gourmet',
+  lemaMarca: 'Palomitas artesanales',
   ariaMenu: 'Abrir menu principal',
   ariaNavegacion: 'Principal',
   ariaAccesosRapidos: 'Accesos rápidos',
