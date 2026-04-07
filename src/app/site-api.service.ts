@@ -49,6 +49,14 @@ export type ApiErrorLogRequest = {
   fechaOcurrencia: string;
 };
 
+export type BotonWhatsRequest = {
+  ip?: string | null;
+  userAgent?: string;
+  deviceType?: string;
+  path?: string;
+  referrer?: string;
+};
+
 type ProductsResponse = unknown;
 
 type ApiRequestLogContext = {
@@ -179,6 +187,22 @@ export class SiteApiService {
         endpoint
       },
       () => this.http.post(endpoint, payload)
+    );
+  }
+
+  registerWhatsappButtonClick(payload: BotonWhatsRequest | undefined): Observable<unknown> {
+    const endpoint = `${this.baseUrl}/boton-whats`;
+
+    return this.requestWithErrorLogging(
+      {
+        origen: 'ui',
+        metodo: 'POST',
+        endpoint,
+        contexto: {
+          fase: 'boton-whatsapp'
+        }
+      },
+      () => this.http.post(endpoint, payload ?? {})
     );
   }
 

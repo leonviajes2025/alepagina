@@ -2,7 +2,7 @@
   "info": {
     "name": "back_2 API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Coleccion de prueba para la API Next.js con Prisma y Supabase."
+    "description": "Coleccion generada desde data/api-docs.json para mantener sincronizados front y Postman."
   },
   "variable": [
     {
@@ -47,16 +47,17 @@
       "name": "Contactos",
       "item": [
         {
-          "name": "GET contactos",
+          "name": "GET Listar contactos",
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/contactos"
           }
         },
         {
-          "name": "POST contacto",
+          "name": "POST Crear contacto",
           "request": {
             "method": "POST",
+            "url": "{{baseUrl}}/api/contactos",
             "header": [
               {
                 "key": "Content-Type",
@@ -65,26 +66,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Marta Soto\",\n  \"email\": \"{{contactoEmailDuplicado}}\",\n  \"telefono\": \"+5215555555510\",\n  \"aceptaPromociones\": true,\n  \"pregunta\": \"\u00bfTienen disponibilidad inmediata?\"\n}"
-            },
-            "url": "{{baseUrl}}/api/contactos"
-          }
-        },
-        {
-          "name": "POST contacto con email duplicado",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Marta Soto Segunda Alta\",\n  \"email\": \"{{contactoEmailDuplicado}}\",\n  \"telefono\": \"+5215555555511\",\n  \"aceptaPromociones\": false,\n  \"pregunta\": \"Segunda solicitud con el mismo correo\"\n}"
-            },
-            "url": "{{baseUrl}}/api/contactos"
+              "raw": "{\n  \"nombre\": \"Marta Soto\",\n  \"email\": \"{{contactoEmailDuplicado}}\",\n  \"telefono\": \"+5215555555510\",\n  \"aceptaPromociones\": true,\n  \"pregunta\": \"Tienen disponibilidad inmediata?\"\n}"
+            }
           }
         }
       ]
@@ -93,21 +76,28 @@
       "name": "Productos",
       "item": [
         {
-          "name": "GET productos",
+          "name": "GET Listar productos",
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/productos"
           }
         },
         {
-            "name": "GET productos visibles",
+          "name": "POST Crear producto",
           "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/api/productos/visibles"
-          }
-        },
-        {
-          "name": "POST producto",
+            "method": "POST",
+            "url": "{{baseUrl}}/api/productos",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Producto Postman\",\n  \"categoria\": \"Accesorios\",\n  \"descripcion\": \"Creado desde la coleccion de Postman\",\n  \"precio\": \"220.00\",\n  \"imagenUrl\": \"https://example.com/postman.jpg\",\n  \"activo\": true,\n  \"visible\": true\n}"
+            }
+          },
           "event": [
             {
               "listen": "test",
@@ -121,26 +111,27 @@
                 ]
               }
             }
-          ],
+          ]
+        },
+        {
+          "name": "GET Listar productos activos",
           "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Producto Postman\",\n  \"categoria\": \"Accesorios\",\n  \"descripcion\": \"Creado desde la coleccion de Postman\",\n  \"precio\": \"220.00\",\n  \"imagenUrl\": \"https://example.com/postman.jpg\",\n  \"activo\": true,\n  \"visible\": true\n}"
-            },
-            "url": "{{baseUrl}}/api/productos"
+            "method": "GET",
+            "url": "{{baseUrl}}/api/productos/activos"
           }
         },
         {
-          "name": "PUT producto por id",
+          "name": "GET Listar productos visibles",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/productos/visibles"
+          }
+        },
+        {
+          "name": "PUT Actualizar producto",
           "request": {
             "method": "PUT",
+            "url": "{{baseUrl}}/api/productos/{{productoId}}",
             "header": [
               {
                 "key": "Content-Type",
@@ -150,12 +141,11 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Producto Actualizado Postman\",\n  \"categoria\": \"Hogar\",\n  \"precio\": \"180.00\",\n  \"visible\": false\n}"
-            },
-            "url": "{{baseUrl}}/api/productos/{{productoId}}"
+            }
           }
         },
         {
-          "name": "DELETE producto por id",
+          "name": "DELETE Desactivar producto",
           "request": {
             "method": "DELETE",
             "url": "{{baseUrl}}/api/productos/{{productoId}}"
@@ -167,14 +157,28 @@
       "name": "Contactos WhatsApp",
       "item": [
         {
-          "name": "GET contactos-whats",
+          "name": "GET Listar solicitudes WhatsApp",
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/contactos-whats"
           }
         },
         {
-          "name": "POST contacto-whats",
+          "name": "POST Crear solicitud WhatsApp",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/contactos-whats",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": null,\n  \"cotizacion\": \"Necesito una cotizacion para 20 piezas del Producto Base\",\n  \"clienteEstatus\": \"pendiente\",\n  \"fechaEntregaEstimada\": \"2026-04-20\"\n}"
+            }
+          },
           "event": [
             {
               "listen": "test",
@@ -188,9 +192,13 @@
                 ]
               }
             }
-          ],
+          ]
+        },
+        {
+          "name": "PATCH Actualizar estatus WhatsApp",
           "request": {
-            "method": "POST",
+            "method": "PATCH",
+            "url": "{{baseUrl}}/api/contactos-whats/{{pedidoId}}",
             "header": [
               {
                 "key": "Content-Type",
@@ -199,9 +207,37 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": null,\n  \"cotizacion\": \"Necesito una cotizacion para 20 piezas del Producto Base\",\n  \"fechaEntregaEstimada\": \"2026-04-20\"\n}"
-            },
-            "url": "{{baseUrl}}/api/contactos-whats"
+              "raw": "{\n  \"clienteEstatus\": \"confirmado\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Boton WhatsApp",
+      "item": [
+        {
+          "name": "GET Listar clics WhatsApp",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/boton-whats"
+          }
+        },
+        {
+          "name": "POST Registrar clic WhatsApp",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/boton-whats",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
           }
         }
       ]
@@ -210,9 +246,10 @@
       "name": "Cotizacion Detalle",
       "item": [
         {
-          "name": "POST cotizacion-detalle",
+          "name": "POST Crear detalle de cotizacion",
           "request": {
             "method": "POST",
+            "url": "{{baseUrl}}/api/cotizacion-detalle",
             "header": [
               {
                 "key": "Content-Type",
@@ -222,8 +259,7 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"idPedido\": {{pedidoId}},\n  \"idProducto\": {{productoId}},\n  \"numeroPiezas\": 20\n}"
-            },
-            "url": "{{baseUrl}}/api/cotizacion-detalle"
+            }
           }
         }
       ]
@@ -232,14 +268,28 @@
       "name": "Acceso Administrativo",
       "item": [
         {
-          "name": "GET usuarios-acceso",
+          "name": "GET Listar usuarios de acceso",
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/usuarios-acceso"
           }
         },
         {
-          "name": "POST usuario-acceso",
+          "name": "POST Crear usuario de acceso",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/usuarios-acceso",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreUsuario\": \"{{nombreUsuarioAccesoNuevo}}\",\n  \"contrasena\": \"{{contrasenaAccesoNueva}}\",\n  \"nombreCompleto\": \"Supervisor Comercial\",\n  \"tienePermiso\": true\n}"
+            }
+          },
           "event": [
             {
               "listen": "test",
@@ -256,26 +306,13 @@
                 ]
               }
             }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nombreUsuario\": \"{{nombreUsuarioAccesoNuevo}}\",\n  \"contrasena\": \"{{contrasenaAccesoNueva}}\",\n  \"nombreCompleto\": \"Supervisor Comercial\",\n  \"tienePermiso\": true\n}"
-            },
-            "url": "{{baseUrl}}/api/usuarios-acceso"
-          }
+          ]
         },
         {
-          "name": "PUT usuario-acceso por id",
+          "name": "PUT Actualizar usuario de acceso",
           "request": {
             "method": "PUT",
+            "url": "{{baseUrl}}/api/usuarios-acceso/{{usuarioAccesoId}}",
             "header": [
               {
                 "key": "Content-Type",
@@ -285,14 +322,14 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombreCompleto\": \"Supervisor Ventas\",\n  \"tienePermiso\": false,\n  \"contrasena\": \"NuevaClave123\"\n}"
-            },
-            "url": "{{baseUrl}}/api/usuarios-acceso/{{usuarioAccesoId}}"
+            }
           }
         },
         {
-          "name": "POST validar usuario-acceso admin",
+          "name": "POST Validar acceso administrativo",
           "request": {
             "method": "POST",
+            "url": "{{baseUrl}}/api/usuarios-acceso/validar",
             "header": [
               {
                 "key": "Content-Type",
@@ -302,31 +339,19 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombreUsuario\": \"{{nombreUsuarioAccesoAdmin}}\",\n  \"contrasena\": \"{{contrasenaAccesoAdmin}}\"\n}"
-            },
-            "url": "{{baseUrl}}/api/usuarios-acceso/validar"
+            }
           }
-        },
+        }
+      ]
+    },
+    {
+      "name": "Inicios de Sesion",
+      "item": [
         {
-          "name": "POST validar usuario-acceso nuevo",
+          "name": "POST Registrar inicio de sesion",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nombreUsuario\": \"{{nombreUsuarioAccesoNuevo}}\",\n  \"contrasena\": \"{{contrasenaAccesoNueva}}\"\n}"
-            },
-            "url": "{{baseUrl}}/api/usuarios-acceso/validar"
-          }
-        },
-        {
-          "name": "POST inicio-sesion admin",
-          "request": {
-            "method": "POST",
+            "url": "{{baseUrl}}/api/inicios-sesion",
             "header": [
               {
                 "key": "Content-Type",
@@ -336,25 +361,7 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombreUsuario\": \"{{nombreUsuarioAccesoAdmin}}\",\n  \"contrasena\": \"{{contrasenaAccesoAdmin}}\"\n}"
-            },
-            "url": "{{baseUrl}}/api/inicios-sesion"
-          }
-        },
-        {
-          "name": "POST inicio-sesion nuevo",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nombreUsuario\": \"{{nombreUsuarioAccesoNuevo}}\",\n  \"contrasena\": \"{{contrasenaAccesoNueva}}\"\n}"
-            },
-            "url": "{{baseUrl}}/api/inicios-sesion"
+            }
           }
         }
       ]
@@ -363,16 +370,17 @@
       "name": "Logs de Errores",
       "item": [
         {
-          "name": "GET logs-errores",
+          "name": "GET Listar logs de errores",
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/logs-errores"
           }
         },
         {
-          "name": "POST log-error",
+          "name": "POST Crear log de error",
           "request": {
             "method": "POST",
+            "url": "{{baseUrl}}/api/logs-errores",
             "header": [
               {
                 "key": "Content-Type",
@@ -382,8 +390,7 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"dominio\": \"frontend-web\",\n  \"origen\": \"checkout\",\n  \"metodo\": \"POST\",\n  \"codigo\": \"PAYMENT_TIMEOUT\",\n  \"mensaje\": \"No fue posible completar el cobro.\",\n  \"detalle\": \"La pasarela no respondio dentro del tiempo esperado.\",\n  \"contexto\": {\n    \"pedidoId\": 123,\n    \"traceId\": \"req-01HXYZ\"\n  },\n  \"fechaOcurrencia\": \"2026-04-05T18:45:12.000Z\"\n}"
-            },
-            "url": "{{baseUrl}}/api/logs-errores"
+            }
           }
         }
       ]

@@ -258,9 +258,50 @@ export class AppComponent implements OnInit {
     return this.api.productsEndpoint;
   }
 
-  openContactWhatsapp(event: Event): void {
+  async openContactWhatsapp(event: Event): Promise<void> {
     event.preventDefault();
+
+    // Abrir el enlace de WhatsApp inmediatamente para no bloquear la UX
     this.openWhatsappMessage(this.seccionContacto.mensajeWhatsapp);
+
+    // Recolectar información del cliente y enviar al backend (fire-and-forget)
+    const userAgent = navigator.userAgent || '';
+    const deviceType = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent) ? 'mobile' : 'desktop';
+    const path = location.pathname || '';
+    const referrer = document.referrer || '';
+
+    let ip: string | null = null;
+
+    try {
+      const resp = await fetch('https://api.ipify.org?format=json');
+
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data && typeof data.ip === 'string') {
+          ip = data.ip;
+        }
+      }
+    } catch {
+      // No bloquear si falla la obtención de IP (CORS, red, etc.)
+      ip = null;
+    }
+
+    const payload = {
+      ip,
+      userAgent,
+      deviceType,
+      path,
+      referrer
+    };
+
+    this.api.registerWhatsappButtonClick(payload).subscribe({
+      next: () => {
+        // mensaje registrado correctamente (no hacemos nada en particular)
+      },
+      error: () => {
+        // si falla, SiteApiService ya registra el issue internamente
+      }
+    });
   }
 
   retryApiConnection(): void {
