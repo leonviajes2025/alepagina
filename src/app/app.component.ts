@@ -197,7 +197,7 @@ export class AppComponent implements OnInit {
   }
 
   get deliveryFee(): number {
-    return this.quoteDelivery ? 180 : 0;
+    return this.quoteDelivery ? 0 : 0;
   }
 
   get total(): number {
