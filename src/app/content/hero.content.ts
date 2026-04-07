@@ -29,8 +29,8 @@ export const contenidoHero = {
   },
   vitrina: {
     etiquetaDestacada: 'Colmena favorita',
-    tituloDato: 'Desde 50 piezas',
-    descripcionDato: 'Pedidos móviles rápidos e intuitivos para eventos y compra individual',
+    tituloDato: 'Desde 1 pieza hasta eventos grandes',
+    descripcionDato: 'Pedidos rápidos e intuitivos para eventos y compra individual',
     tituloNota: 'Miel, maíz y color limpio',
     descripcionNota: 'Visual premium que transmite frescura'
   }
