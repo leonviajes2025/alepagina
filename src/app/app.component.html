@@ -21,7 +21,7 @@
     </button>
 
     <div class="site-header-actions">
-      <button class="theme-toggle" type="button" [attr.aria-label]="themeToggleAriaLabel" (click)="toggleTheme()">
+        <button class="theme-toggle theme-toggle-desktop" type="button" [attr.aria-label]="themeToggleAriaLabel" (click)="toggleTheme()">
         <span class="theme-toggle-indicator" aria-hidden="true"></span>
         <span class="theme-toggle-copy">
           <small>Tema</small>
@@ -30,6 +30,14 @@
       </button>
 
       <nav class="site-nav" id="site-nav" [attr.aria-label]="navegacion.ariaNavegacion" [class.site-nav-open]="mobileMenuOpen">
+        <button class="theme-toggle theme-toggle-mobile" type="button" [attr.aria-label]="themeToggleAriaLabel" (click)="toggleTheme()">
+          <span class="theme-toggle-indicator" aria-hidden="true"></span>
+          <span class="theme-toggle-copy">
+            <small>Tema</small>
+            <strong>{{ currentThemeLabel }}</strong>
+          </span>
+        </button>
+
         @for (enlace of navegacion.enlacesPrincipales; track enlace.ancla) {
           <a [href]="enlace.ancla" (click)="closeMobileMenu()">{{ enlace.etiqueta }}</a>
         }

@@ -155,6 +155,20 @@ describe('AppComponent', () => {
     expect(compiled.querySelector('.theme-toggle-copy strong')?.textContent).toContain('Oscuro');
   });
 
+  it('should render the mobile theme toggle inside the site navigation', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+
+    fixture.detectChanges();
+    flushProductsRequest();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const mobileToggle = compiled.querySelector('.site-nav .theme-toggle-mobile');
+
+    expect(mobileToggle).withContext('expected a mobile-only theme toggle inside the nav').not.toBeNull();
+    expect(mobileToggle?.querySelector('.theme-toggle-copy strong')?.textContent).toContain('Oscuro');
+  });
+
   it('should preserve the configured price of each catalog product', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
