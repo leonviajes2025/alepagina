@@ -41,6 +41,10 @@
         @for (enlace of navegacion.enlacesPrincipales; track enlace.ancla) {
           <a [href]="enlace.ancla" (click)="closeMobileMenu()">{{ enlace.etiqueta }}</a>
         }
+
+        <div class="privacy-mobile-wrap">
+          <button class="privacy-button privacy-button-mobile" type="button" (click)="openPrivacyModal(); closeMobileMenu()">Aviso de privacidad</button>
+        </div>
       </nav>
     </div>
   </header>

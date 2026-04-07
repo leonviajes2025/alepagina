@@ -1240,6 +1240,10 @@ main {
 	cursor: pointer;
 }
 
+.privacy-button-mobile {
+	display: none;
+}
+
 .privacy-modal {
 	position: fixed;
 	inset: 0;
@@ -1301,5 +1305,23 @@ main {
 
 	.privacy-modal-content ul {
 		color: #fff8f0;
+	}
+}
+
+@media (max-width: 720px) {
+	.privacy-footer {
+		display: none;
+	}
+
+	.privacy-button-mobile {
+		display: inline-flex;
+		width: calc(100% - 2rem);
+		margin: 0.5rem 1rem;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.site-nav {
+		padding-bottom: 0.5rem;
 	}
 }
