@@ -128,6 +128,8 @@ export class AppComponent implements OnInit {
 
   mobileMenuOpen = false;
 
+  // Estado del modal de aviso de privacidad
+  showPrivacyModal = false;
   currentTheme: SiteThemeName = this.config.theme.defaultTheme;
 
   constructor() {
@@ -334,6 +336,14 @@ export class AppComponent implements OnInit {
 
   toggleMobileMenu(): void {
     this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
+  openPrivacyModal(): void {
+    this.showPrivacyModal = true;
+  }
+
+  closePrivacyModal(): void {
+    this.showPrivacyModal = false;
   }
 
   toggleTheme(): void {

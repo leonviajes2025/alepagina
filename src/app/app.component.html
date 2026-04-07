@@ -456,4 +456,26 @@
       <a [href]="enlace.ancla">{{ enlace.etiqueta }}</a>
     }
   </nav>
+  <footer class="privacy-footer">
+    <button class="privacy-button" type="button" (click)="openPrivacyModal()">Aviso de privacidad</button>
+  </footer>
+
+  @if (showPrivacyModal) {
+    <div class="privacy-modal" role="dialog" aria-modal="true" aria-label="Aviso de privacidad">
+      <div class="privacy-modal-backdrop" (click)="closePrivacyModal()"></div>
+      <div class="privacy-modal-content">
+        <h2>Aviso de privacidad</h2>
+        <p>Recopilamos información técnica de los usuarios, como la dirección IP, tipo de navegador y dispositivo, con las siguientes finalidades:</p>
+        <ul>
+          <li>Garantizar la seguridad del sistema y prevenir accesos no autorizados o actividades fraudulentas</li>
+          <li>Mantener el correcto funcionamiento de la plataforma (registros, monitoreo y auditoría)</li>
+          <li>Analizar de forma estadística el uso del servicio para mejorar la experiencia del usuario</li>
+          <li>Los datos técnicos como la dirección IP podrán ser utilizados para fines de seguridad, control y mejora del servicio</li>
+        </ul>
+        <div class="privacy-modal-actions">
+          <button class="button button-secondary" type="button" (click)="closePrivacyModal()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

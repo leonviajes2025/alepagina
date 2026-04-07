@@ -1221,3 +1221,85 @@ main {
 		display: none;
 	}
 }
+
+/* Styles for privacy modal and footer */
+.privacy-footer {
+	position: fixed;
+	right: 1rem;
+	bottom: 1rem;
+	z-index: 60;
+}
+
+.privacy-button {
+	min-height: 2.6rem;
+	padding: 0.5rem 0.8rem;
+	border-radius: 999px;
+	background: rgba(255,255,255,0.95);
+	border: 1px solid rgba(86,45,18,0.08);
+	font-weight: 800;
+	cursor: pointer;
+}
+
+.privacy-modal {
+	position: fixed;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	z-index: 70;
+}
+
+.privacy-modal-backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0,0,0,0.45);
+}
+
+.privacy-modal-content {
+	position: relative;
+	max-width: 720px;
+	width: calc(100% - 2rem);
+	background: var(--panel-background, #fff);
+	color: var(--ink-900);
+	padding: 1.5rem;
+	border-radius: 0.75rem;
+	box-shadow: 0 2rem 3rem rgba(20,10,10,0.3);
+	z-index: 71;
+}
+
+.privacy-modal-content h2 {
+	margin-top: 0;
+}
+
+.privacy-modal-content ul {
+	margin: 0.5rem 0 1rem 1.1rem;
+}
+
+.privacy-modal-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+}
+
+/* Dark theme adjustments for privacy modal */
+:host-context(html[data-theme='oscuro']) {
+	.privacy-button {
+		background: linear-gradient(180deg, rgba(46,31,38,0.96), rgba(28,19,24,0.98));
+		color: #fff8f0;
+		border-color: rgba(255,227,192,0.12);
+	}
+
+	.privacy-modal-backdrop {
+		background: rgba(0, 0, 0, 0.7);
+	}
+
+	.privacy-modal-content {
+		background: linear-gradient(180deg, rgba(34,24,26,0.98), rgba(22,16,18,0.98));
+		color: #fff8f0;
+		border: 1px solid rgba(255,227,192,0.06);
+		box-shadow: 0 2rem 3rem rgba(0,0,0,0.6);
+	}
+
+	.privacy-modal-content ul {
+		color: #fff8f0;
+	}
+}
