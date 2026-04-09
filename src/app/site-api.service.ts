@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { catchError, map, of, switchMap, throwError, type Observable } from 'rxjs';
+import { catchError, map, of, switchMap, throwError, tap, shareReplay, finalize, type Observable } from 'rxjs';
 import { siteConfig } from './site.config';
 
 export type ApiProductDto = {
@@ -85,6 +85,9 @@ export class SiteApiService {
     `${this.baseUrl}/productos`
   ];
   private resolvedProductsEndpoint: string = this.productEndpoints[0];
+  private productsCache: { data: ApiProductDto[]; timestamp: number } | null = null;
+  private productsRequestInFlight: Observable<ApiProductDto[]> | null = null;
+  private readonly productsCacheTtlMs = 5 * 60 * 1000; // 5 minutos
 
   get apiBaseUrl(): string {
 	return this.baseUrl;
@@ -107,9 +110,19 @@ export class SiteApiService {
   }
 
   getProducts(): Observable<ApiProductDto[]> {
+    // Return cached products if still valid
+    if (this.productsCache && (Date.now() - this.productsCache.timestamp) < this.productsCacheTtlMs) {
+      return of(this.productsCache.data);
+    }
+
+    // If a request is already in flight, return the shared observable
+    if (this.productsRequestInFlight) {
+      return this.productsRequestInFlight;
+    }
+
     this.resolvedProductsEndpoint = this.primaryProductsEndpoint;
 
-    return this.requestProducts(this.primaryProductsEndpoint).pipe(
+    const fetch$ = this.requestProducts(this.primaryProductsEndpoint).pipe(
       catchError((error: unknown) => {
         if (!this.shouldFallbackProductsEndpoint(error) || this.fallbackProductsEndpoint == null) {
           return this.logHttpErrorAndRethrow(error, {
@@ -141,8 +154,19 @@ export class SiteApiService {
           () => this.requestProducts(fallbackEndpoint)
         );
       }),
-      map((response) => this.extractProducts(response))
+      map((response) => this.extractProducts(response)),
+      tap((products) => {
+        this.productsCache = { data: products, timestamp: Date.now() };
+      }),
+      finalize(() => {
+        this.productsRequestInFlight = null;
+      }),
+      shareReplay({ bufferSize: 1, refCount: true, windowTime: this.productsCacheTtlMs })
     );
+
+    this.productsRequestInFlight = fetch$;
+
+    return fetch$;
   }
 
   submitWhatsappQuote(payload: WhatsappQuoteRequest): Observable<WhatsappQuoteResponse> {
