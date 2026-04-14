@@ -450,10 +450,29 @@
           </p>
         }
 
-        <p class="quote-note">{{ seccionCotizacion.nota }}</p>
-      </article>
-    </section>
-  </main>
+            <p class="quote-note">{{ seccionCotizacion.nota }}</p>
+          </article>
+        </section>
+
+        <section class="section ml-section" id="mercado-libre">
+          <div class="section-heading reveal">
+            <h2>Comprar por Mercado Libre</h2>
+          </div>
+
+          <div class="ml-card reveal">
+            <a
+              href="https://articulo.mercadolibre.com.mx/MLM-5179379562-palomitas-de-caramelo-con-queso-120g-25pz-_JM"
+              target="_blank"
+              rel="noopener noreferrer">
+              <img src="/marca/logoML.png" alt="Comprar por Mercado Libre" class="ml-logo" />
+            </a>
+            <p class="ml-legend">El precio de los productos en Mercado Libre puede ser distintos a los de esta plataforma debido a las comisiones de la plataforma.
+              Para obtener un mejor precio te recomendamos contactarnos por WhatsApp para tu pedido.
+            </p>
+          </div>
+        </section>
+
+      </main>
 
   <nav class="mobile-hud" [attr.aria-label]="navegacion.ariaAtajosMoviles">
     @for (enlace of navegacion.enlacesMoviles; track enlace.ancla) {
